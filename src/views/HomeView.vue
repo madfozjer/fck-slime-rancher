@@ -3,6 +3,10 @@
 import { ref, watch, computed } from 'vue'
 import Hunter from '@/components/Hunter.vue'
 import { useMobsStore } from '@/stores/Mobs.js'
+import { damageTexts, damageColors, damageRotations } from '@/stores/DamageTexts.js'
+import MobDisplay from '@/components/MobDisplay.vue'
+import CoinCounter from '@/components/CoinCounter.vue'
+import HuntersRow from '@/components/HuntersRow.vue'
 
 // Use the mobs store
 const mobsStore = useMobsStore()
@@ -35,47 +39,6 @@ const damagePopStyle = ref({})
 const damagePopText = ref('OUCH!')
 const damagePopColor = ref('text-red-500')
 const damagePopRotation = ref('rotate-0')
-
-// Funny damage texts
-const damageTexts = [
-  'OUCH!',
-  'BAM!',
-  'LOL',
-  'POW!',
-  'WHACK!',
-  'BONK!',
-  'ZAP!',
-  'YIKES!',
-  'SMACK!',
-  'BOOM!',
-  'SHABONK!',
-  'KAPOW!',
-  'OUCHIE!',
-  'OOPSIE DAISY!',
-  'HOT SEX!',
-]
-
-// Possible colors and rotations
-const damageColors = [
-  'text-red-500',
-  'text-yellow-400',
-  'text-green-500',
-  'text-blue-500',
-  'text-pink-500',
-  'text-purple-500',
-  'text-orange-500',
-]
-const damageRotations = [
-  'rotate-3',
-  '-rotate-3',
-  'rotate-6',
-  '-rotate-6',
-  'rotate-12',
-  '-rotate-12',
-  'rotate-1',
-  '-rotate-1',
-  'rotate-0',
-]
 
 // Show damage pop randomly every 3-5 impacts
 let impactCounter = 0
@@ -161,6 +124,14 @@ function increment() {
 
 // State for showing damaged image
 const showDamagedImg = ref(false)
+
+// Example hunters data (replace with real data as needed)
+const hunters = [
+  { name: 'Jacob', color: 'orange' },
+  { name: 'Jacob', color: 'lime' },
+  { name: 'Jacob' },
+  { name: 'Jacob' },
+]
 </script>
 
 <template>
@@ -169,179 +140,28 @@ const showDamagedImg = ref(false)
       class="ml-auto border w-1/3 h-1/2 min-h-3/4 flex flex-col items-center justify-start relative"
       id="mob-container"
     >
-      <div class="flex flex-col items-center w-full">
-        <!-- Mob image, click to damage -->
-        <div class="relative">
-          <img
-            :src="showDamagedImg ? mob.damagedImg : mob.img"
-            :alt="mob.alt"
-            class="block border p-4 h-fit hover:cursor-pointer mt-8"
-            width="270"
-            height="270"
-            @click="increment"
-            :class="isShaking ? 'animate-slime-shake' : ''"
-          />
-          <!-- Damage effect: floating text, random position, random text, random color, random rotation, big, random trigger -->
-          <transition name="damage-pop" mode="out-in">
-            <div
-              v-if="showDamagePop"
-              class="absolute pointer-events-none select-none z-10"
-              :style="damagePopStyle"
-            >
-              <span
-                :class="[
-                  'text-5xl font-extrabold drop-shadow-lg animate-damage-pop',
-                  damagePopColor,
-                  damagePopRotation,
-                ]"
-                style="
-                  font-family:
-                    'Comic Sans MS', 'Comic Sans', 'Chalkboard SE', 'Comic Neue', cursive,
-                    sans-serif;
-                "
-              >
-                {{ damagePopText }}
-              </span>
-            </div>
-          </transition>
-        </div>
-        <!-- Mob name, shakes on damage -->
-        <div
-          class="mt-2 text-xl font-extrabold text-green-700 drop-shadow-lg tracking-wider px-0 py-0"
-          :class="hpBarClass"
-          style="
-            background: none;
-            font-family:
-              'Comic Sans MS', 'Comic Sans', 'Chalkboard SE', 'Comic Neue', cursive, sans-serif;
-            letter-spacing: 0.08em;
-            text-shadow:
-              2px 2px 0 #bbf7d0,
-              4px 4px 0 #22d3ee;
-          "
-        >
-          {{ mob.name }}
-        </div>
-        <!-- HP Bar with shake and color change -->
-        <div class="w-1/2 mt-1">
-          <div
-            class="w-full h-2 bg-lime-200 rounded-full border-2 border-lime-500 overflow-hidden shadow-inner"
-          >
-            <div
-              ref="hpBar"
-              class="h-full transition-all duration-300"
-              :class="hpBarClass"
-              :style="{ width: (hp / mob.maxHp) * 100 + '%' }"
-            ></div>
-          </div>
-          <!-- HP text below the bar -->
-          <div
-            class="text-[10px] text-lime-800 font-extrabold mt-0.5 text-center select-none"
-            style="
-              font-family:
-                'Comic Sans MS', 'Comic Sans', 'Chalkboard SE', 'Comic Neue', cursive, sans-serif;
-              letter-spacing: 0.04em;
-              text-shadow:
-                1px 1px 0 #fff176,
-                2px 2px 0 #bef264;
-              transform: rotate(-3deg) skewX(-8deg);
-            "
-          >
-            {{ hp }} / {{ mob.maxHp }} HP LOL
-          </div>
-        </div>
-      </div>
-      <!-- Coin counter in top center of mob container -->
-      <div
-        class="absolute left-1/2 -translate-x-1/2 top-2 flex items-center gap-2 text-3xl font-bold select-none bg-green-50/90 rounded-full px-6 py-2 shadow border-4 border-green-600"
-      >
-        <!-- SVG coin icon -->
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 drop-shadow" viewBox="0 0 32 32">
-          <!-- Funky, paint-like green coin with wobbly outline and dots -->
-          <path
-            d="M16 3 Q28 5 29 16 Q28 27 16 29 Q4 27 3 16 Q4 5 16 3 Z"
-            fill="#6ee7b7"
-            stroke="#065f46"
-            stroke-width="3"
-          />
-          <ellipse
-            cx="16"
-            cy="16"
-            rx="9"
-            ry="8"
-            fill="#bbf7d0"
-            stroke="#065f46"
-            stroke-width="2"
-            transform="rotate(-7 16 16)"
-          />
-          <circle cx="12" cy="13" r="1.5" fill="#fff" opacity="0.7" />
-          <circle cx="20" cy="19" r="1" fill="#fff" opacity="0.5" />
-          <circle cx="22" cy="11" r="0.7" fill="#22d3ee" opacity="0.7" />
-          <circle cx="10" cy="20" r="0.5" fill="#22d3ee" opacity="0.7" />
-          <path
-            d="M10 25 Q16 28 22 25"
-            stroke="#065f46"
-            stroke-width="1"
-            fill="none"
-            opacity="0.6"
-          />
-        </svg>
-        <span class="text-green-900 drop-shadow">{{ count }}</span>
-      </div>
+      <MobDisplay
+        :mob="mob"
+        :hp="hp"
+        :isShaking="isShaking"
+        :showDamagedImg="showDamagedImg"
+        :showDamagePop="showDamagePop"
+        :damagePopText="damagePopText"
+        :damagePopColor="damagePopColor"
+        :damagePopRotation="damagePopRotation"
+        :damagePopStyle="damagePopStyle"
+        :onDamage="increment"
+      />
+      <CoinCounter :count="count" />
     </div>
     <!-- Hunters section with circular background -->
     <div class="flex justify-center w-fit p-4 border ml-auto" id="hunters">
-      <!-- Hunters row -->
-      <div class="flex gap-7 p-0.25 mt-8 w-fit">
-        <Hunter name="Jacob" color="orange" />
-        <Hunter name="Jacob" color="lime" />
-        <Hunter name="Jacob" />
-        <Hunter name="Jacob" />
-      </div>
+      <HuntersRow :hunters="hunters" />
     </div>
   </div>
 </template>
 
 <style scoped>
-/* Slight shake animation for HP bar and mob name */
-@keyframes hp-shake {
-  0% {
-    transform: translateX(0);
-  }
-  10% {
-    transform: translateX(-4px);
-  }
-  20% {
-    transform: translateX(3px);
-  }
-  30% {
-    transform: translateX(-3px);
-  }
-  40% {
-    transform: translateX(2px);
-  }
-  50% {
-    transform: translateX(-2px);
-  }
-  60% {
-    transform: translateX(1.5px);
-  }
-  70% {
-    transform: translateX(-1.5px);
-  }
-  80% {
-    transform: translateX(1px);
-  }
-  90% {
-    transform: translateX(-0.5px);
-  }
-  100% {
-    transform: translateX(0);
-  }
-}
-.animate-hp-shake {
-  animation: hp-shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
-}
-
 /* Damage pop animation */
 @keyframes damage-pop {
   0% {
@@ -376,45 +196,5 @@ const showDamagedImg = ref(false)
 .damage-pop-enter-from,
 .damage-pop-leave-to {
   opacity: 0;
-}
-
-/* Slime shake animation for mob image */
-@keyframes slime-shake {
-  0% {
-    transform: rotate(0deg) scale(1);
-  }
-  10% {
-    transform: rotate(-4deg) scale(1.02);
-  }
-  20% {
-    transform: rotate(3deg) scale(0.99);
-  }
-  30% {
-    transform: rotate(-3deg) scale(1.01);
-  }
-  40% {
-    transform: rotate(2deg) scale(0.99);
-  }
-  50% {
-    transform: rotate(-2deg) scale(1.01);
-  }
-  60% {
-    transform: rotate(1deg) scale(1);
-  }
-  70% {
-    transform: rotate(-1deg) scale(1);
-  }
-  80% {
-    transform: rotate(0.5deg) scale(1);
-  }
-  90% {
-    transform: rotate(-0.5deg) scale(1);
-  }
-  100% {
-    transform: rotate(0deg) scale(1);
-  }
-}
-.animate-slime-shake {
-  animation: slime-shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
 }
 </style>
