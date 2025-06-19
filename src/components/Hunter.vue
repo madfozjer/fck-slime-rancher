@@ -6,17 +6,22 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  color: {
+    type: String,
+    default: 'gray',
+  },
 })
 </script>
 
 <template>
   <div
-    class="border-dotted border border-gray-800 flex items-center justify-center relative w-[160px] h-[160px] bg-transparent"
+    class="border-dotted border border-gray-800 w-fit h-fit flex items-center justify-center bg-transparent relative"
   >
-    <!-- Circle background: smaller than hunter but still visible -->
+    <!-- Circle background: bigger than cat, 50% transparent -->
     <div
-      class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-2/4 rounded-full bg-orange-400 border-2 border-orange-600 shadow"
-      style="width: 96px; height: 96px; z-index: 0"
+      class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full"
+      :class="`bg-${props.color}-400`"
+      style="width: 114px; height: 114px; opacity: 0.4"
     ></div>
     <!-- Hunter image -->
     <img

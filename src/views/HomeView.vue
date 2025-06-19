@@ -321,9 +321,9 @@ const showDamagedImg = ref(false)
     <!-- Hunters section with circular background -->
     <div class="flex justify-center w-fit p-4 border ml-auto" id="hunters">
       <!-- Hunters row -->
-      <div class="flex gap-4 mt-8 w-fit">
-        <Hunter name="Jacob" />
-        <Hunter name="Jacob" />
+      <div class="flex gap-7 p-0.25 mt-8 w-fit">
+        <Hunter name="Jacob" color="orange" />
+        <Hunter name="Jacob" color="lime" />
         <Hunter name="Jacob" />
         <Hunter name="Jacob" />
       </div>
