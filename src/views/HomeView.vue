@@ -1,6 +1,17 @@
 <script setup>
 // Import Vue Composition API helpers
 import { ref, watch, computed } from 'vue'
+import Hunter from '@/components/Hunter.vue'
+
+// Mob data and mobQueue can be moved to a separate file or MobData.js
+
+// Damage pop logic and arrays can be moved to a MobDisplay.vue component
+
+// HP bar and HP text can be moved to a HpBar.vue component
+
+// Coin counter can be moved to a CoinCounter.vue component
+
+// Mob image, click logic, and shake/damage image logic can be moved to MobDisplay.vue
 
 // Define a GreenSlime mob template
 const GreenSlime = {
@@ -67,6 +78,11 @@ const damageTexts = [
   'YIKES!',
   'SMACK!',
   'BOOM!',
+  'SHABONK!',
+  'KAPOW!',
+  'OUCHIE!',
+  'OOPSIE DAISY!',
+  'HOT SEX!',
 ]
 
 // Possible colors and rotations
@@ -164,6 +180,7 @@ watch(hp, (newHp, oldHp) => {
 function increment() {
   if (hp.value > 0) {
     hp.value--
+    hp.value = Math.max(0, Math.round(hp.value * 100) / 100) // Round to 2 decimal place
     // If mob dies, move to next and add coins
     if (hp.value === 0 && currentMobIndex.value < mobQueue.length - 1) {
       currentMobIndex.value++
@@ -177,7 +194,7 @@ const showDamagedImg = ref(false)
 </script>
 
 <template>
-  <div class="flex h-screen w-screen">
+  <div class="h-screen w-screen">
     <div
       class="ml-auto border w-1/3 h-1/2 min-h-3/4 flex flex-col items-center justify-start relative"
       id="mob-container"
@@ -299,6 +316,16 @@ const showDamagedImg = ref(false)
           />
         </svg>
         <span class="text-green-900 drop-shadow">{{ count }}</span>
+      </div>
+    </div>
+    <!-- Hunters section with circular background -->
+    <div class="flex justify-center w-fit p-4 border ml-auto" id="hunters">
+      <!-- Hunters row -->
+      <div class="flex gap-4 mt-8 w-fit">
+        <Hunter name="Jacob" />
+        <Hunter name="Jacob" />
+        <Hunter name="Jacob" />
+        <Hunter name="Jacob" />
       </div>
     </div>
   </div>
