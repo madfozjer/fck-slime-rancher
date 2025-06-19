@@ -14,12 +14,10 @@ const props = defineProps({
 </script>
 
 <template>
-  <div
-    class="border-dotted border border-gray-800 w-fit h-fit flex items-center justify-center bg-transparent relative"
-  >
-    <!-- Circle background: bigger than cat, 50% transparent -->
+  <div class="w-fit h-fit flex items-center justify-center bg-transparent relative">
+    <!-- Circle background: bigger than cat, 50% transparent, with shadow -->
     <div
-      class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full"
+      class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full shadow-lg"
       :class="`bg-${props.color}-400`"
       style="width: 114px; height: 114px; opacity: 0.4"
     ></div>

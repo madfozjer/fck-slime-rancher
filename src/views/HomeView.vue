@@ -2,43 +2,13 @@
 // Import Vue Composition API helpers
 import { ref, watch, computed } from 'vue'
 import Hunter from '@/components/Hunter.vue'
+import { useMobsStore } from '@/stores/Mobs.js'
 
-// Mob data and mobQueue can be moved to a separate file or MobData.js
+// Use the mobs store
+const mobsStore = useMobsStore()
 
-// Damage pop logic and arrays can be moved to a MobDisplay.vue component
-
-// HP bar and HP text can be moved to a HpBar.vue component
-
-// Coin counter can be moved to a CoinCounter.vue component
-
-// Mob image, click logic, and shake/damage image logic can be moved to MobDisplay.vue
-
-// Define a GreenSlime mob template
-const GreenSlime = {
-  name: 'Green Slime',
-  img: '/green-slime/green-slime.png',
-  alt: 'Green Slime',
-  hp: 10,
-  maxHp: 10,
-  price: 1,
-  damagedImg: '/green-slime/green-slime-damaged.png', // <-- add damaged image
-}
-
-// Create a queue of mobs (all GreenSlime for now)
-const mobQueue = [
-  GreenSlime,
-  GreenSlime,
-  GreenSlime,
-  GreenSlime,
-  GreenSlime,
-  GreenSlime,
-  GreenSlime,
-  GreenSlime,
-  GreenSlime,
-  GreenSlime,
-  GreenSlime,
-  GreenSlime,
-]
+// Generate mob queue from store
+const mobQueue = mobsStore.generateMobQueue(12)
 
 // Track which mob is currently active
 const currentMobIndex = ref(0)
