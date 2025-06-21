@@ -11,6 +11,8 @@ import { useHuntersStore } from '@/stores/Hunters.js'
 import { useWeaponsStore } from '@/stores/Weapons.js'
 import { toRaw } from 'vue'
 import { useAnimationStore } from '@/stores/Animation.js'
+import { useInventoryStore } from '@/stores/Inventory.js'
+import Inventory from '@/components/Inventory.vue'
 
 // Use the mobs store
 const mobsStore = useMobsStore()
@@ -126,6 +128,7 @@ const showDamagedImg = ref(false)
 // Use the hunters store
 const huntersStore = useHuntersStore()
 const weaponsStore = useWeaponsStore()
+const inventoryStore = useInventoryStore()
 
 // Use hunters from the store as a reactive array
 const hunters = ref([
@@ -161,6 +164,7 @@ const avgAttackInterval = computed(() => {
 let attackInterval = null
 
 onMounted(() => {
+  inventoryStore.initializeInventory()
   attackInterval = setInterval(() => {
     if (hp.value > 0) {
       // Trigger shake for all hunters via animation store
@@ -209,89 +213,97 @@ const dpsTooltip = ref(false)
 </script>
 
 <template>
-  <div class="h-screen w-screen">
-    <div
-      class="ml-auto border w-1/3 h-1/2 min-h-3/4 flex flex-col items-center justify-start relative"
-      id="mob-container"
-    >
-      <MobDisplay
-        :mob="mob"
-        :hp="hp"
-        :isShaking="isShaking"
-        :showDamagedImg="showDamagedImg"
-        :showDamagePop="showDamagePop"
-        :damagePopText="damagePopText"
-        :damagePopColor="damagePopColor"
-        :damagePopRotation="damagePopRotation"
-        :damagePopStyle="damagePopStyle"
-        :onDamage="increment"
-      />
-      <CoinCounter :count="count" />
+  <div class="h-screen w-screen flex-col">
+    <div class="flex w-full h-3/4">
+      <div
+        class="ml-auto border w-1/3 h-full min-h-3/4 flex flex-col items-center justify-start relative"
+        id="mob-container"
+      >
+        <MobDisplay
+          :mob="mob"
+          :hp="hp"
+          :isShaking="isShaking"
+          :showDamagedImg="showDamagedImg"
+          :showDamagePop="showDamagePop"
+          :damagePopText="damagePopText"
+          :damagePopColor="damagePopColor"
+          :damagePopRotation="damagePopRotation"
+          :damagePopStyle="damagePopStyle"
+          :onDamage="increment"
+        />
+        <CoinCounter :count="count" />
+      </div>
     </div>
 
-    <div class="flex flex-col ml-auto w-fit border">
-      <!-- DPS display above hunters -->
-      <div class="w-full flex justify-center items-center mt-2 mb-1 hover:cursor-pointer">
-        <div
-          class="relative group text-lg font-bold text-blue-700 bg-blue-100 rounded px-4 py-1 shadow"
-          @mouseenter="dpsTooltip = true"
-          @mouseleave="dpsTooltip = false"
-        >
-          <div
-            v-if="dpsTooltip"
-            class="absolute left-1/2 bottom-full mb-2 -translate-x-1/2 bg-white bg-opacity-95 border border-blue-400 rounded shadow px-6 py-5 text-base z-30 w-[400px] pointer-events-none transition-opacity duration-200 text-gray-900"
-          >
-            <div class="mb-2 font-semibold text-blue-700 text-lg">DPS Breakdown</div>
-            <div v-for="h in hunters" :key="h.id" class="mb-2">
-              <span class="font-bold text-blue-900">{{ h.name }}</span>
-              <span v-if="h.weapon" class="text-blue-700"> ({{ h.weapon.name }})</span>:
-              <span class="text-pink-700"
-                >Speed: <span class="font-mono">{{ h.speed }}</span></span
-              >,
-              <span v-if="h.weapon" class="text-red-700"
-                >Phys: <span class="font-mono">{{ h.weapon.physDamage }}</span></span
-              >,
-              <span v-if="h.weapon" class="text-purple-700"
-                >Psi: <span class="font-mono">{{ h.weapon.psiDamage }}</span></span
-              >
-              <span v-if="h.modifier" class="text-green-700">
-                | Mod: Phys x{{ h.modifier.phys }}, Psi x{{ h.modifier.psi }}
-              </span>
-              <span v-if="h.weapon" class="block mt-1 text-gray-700 ml-2">
-                <span class="font-semibold">Total:</span>
-                <span class="text-blue-800">((</span
-                ><span class="text-red-700">{{ h.weapon.physDamage }}</span>
-                <span class="text-blue-800">×</span>
-                <span class="text-green-700">{{ h.modifier?.phys ?? 1 }}</span
-                ><span class="text-blue-800">)</span> <span class="text-blue-800">+</span>
-                <span class="text-purple-700">{{ h.weapon.psiDamage }}</span>
-                <span class="text-blue-800">×</span>
-                <span class="text-green-700">{{ h.modifier?.psi ?? 1 }}</span
-                ><span class="text-blue-800">)) ×</span>
-                <span class="text-pink-700">{{ h.speed }}</span>
-                <span class="text-blue-800">=</span>
-                <span class="font-mono text-orange-600">{{
-                  (
-                    ((h.weapon.physDamage || 0) * (h.modifier?.phys ?? 1) +
-                      (h.weapon.psiDamage || 0) * (h.modifier?.psi ?? 1)) *
-                    (h.speed || 1)
-                  ).toFixed(3)
-                }}</span>
-              </span>
-            </div>
-            <div class="mt-4 pt-2 border-t border-blue-200 text-lg font-bold text-center">
-              Final Total: <span class="text-orange-600">{{ dps }}</span>
-            </div>
-          </div>
-          DPS: {{ dps }}
-          <span class="block text-xs text-blue-900 font-normal mt-0.5"
-            >Hunters attack every {{ (avgAttackInterval / 1000).toFixed(2) }}s</span
-          >
-        </div>
+    <div class="flex">
+      <div class="w-2/3 h-full">
+        <Inventory class="w-full h-full overflow-y-scroll" />
       </div>
-      <!-- Hunters section with circular background -->
-      <div class="flex p-4 -mt-8" id="hunters">
-        <HuntersRow :hunters="hunters" />
+      <div class="flex flex-col ml-auto w-1/3 border">
+        <!-- DPS display above hunters -->
+        <div class="w-full flex justify-center items-center mt-2 mb-1 hover:cursor-pointer">
+          <div
+            class="relative group text-lg font-bold text-blue-700 bg-blue-100 rounded px-4 py-1 shadow"
+            @mouseenter="dpsTooltip = true"
+            @mouseleave="dpsTooltip = false"
+          >
+            <div
+              v-if="dpsTooltip"
+              class="absolute left-1/2 bottom-full mb-2 -translate-x-1/2 bg-white bg-opacity-95 border border-blue-400 rounded shadow px-6 py-5 text-base z-30 w-[400px] pointer-events-none transition-opacity duration-200 text-gray-900"
+            >
+              <div class="mb-2 font-semibold text-blue-700 text-lg">DPS Breakdown</div>
+              <div v-for="h in hunters" :key="h.id" class="mb-2">
+                <span class="font-bold text-blue-900">{{ h.name }}</span>
+                <span v-if="h.weapon" class="text-blue-700"> ({{ h.weapon.name }})</span>:
+                <span class="text-pink-700"
+                  >Speed: <span class="font-mono">{{ h.speed }}</span></span
+                >,
+                <span v-if="h.weapon" class="text-red-700"
+                  >Phys: <span class="font-mono">{{ h.weapon.physDamage }}</span></span
+                >,
+                <span v-if="h.weapon" class="text-purple-700"
+                  >Psi: <span class="font-mono">{{ h.weapon.psiDamage }}</span></span
+                >
+                <span v-if="h.modifier" class="text-green-700">
+                  | Mod: Phys x{{ h.modifier.phys }}, Psi x{{ h.modifier.psi }}
+                </span>
+                <span v-if="h.weapon" class="block mt-1 text-gray-700 ml-2">
+                  <span class="font-semibold">Total:</span>
+                  <span class="text-blue-800">((</span
+                  ><span class="text-red-700">{{ h.weapon.physDamage }}</span>
+                  <span class="text-blue-800">×</span>
+                  <span class="text-green-700">{{ h.modifier?.phys ?? 1 }}</span
+                  ><span class="text-blue-800">)</span> <span class="text-blue-800">+</span>
+                  <span class="text-purple-700">{{ h.weapon.psiDamage }}</span>
+                  <span class="text-blue-800">×</span>
+                  <span class="text-green-700">{{ h.modifier?.psi ?? 1 }}</span
+                  ><span class="text-blue-800">)) ×</span>
+                  <span class="text-pink-700">{{ h.speed }}</span>
+                  <span class="text-blue-800">=</span>
+                  <span class="font-mono text-orange-600">{{
+                    (
+                      ((h.weapon.physDamage || 0) * (h.modifier?.phys ?? 1) +
+                        (h.weapon.psiDamage || 0) * (h.modifier?.psi ?? 1)) *
+                      (h.speed || 1)
+                    ).toFixed(3)
+                  }}</span>
+                </span>
+              </div>
+              <div class="mt-4 pt-2 border-t border-blue-200 text-lg font-bold text-center">
+                Final Total: <span class="text-orange-600">{{ dps }}</span>
+              </div>
+            </div>
+            DPS: {{ dps }}oka
+            <span class="block text-xs text-blue-900 font-normal mt-0.5"
+              >Hunters attack every {{ (avgAttackInterval / 1000).toFixed(2) }}s</span
+            >
+          </div>
+        </div>
+        <!-- Hunters section with circular background -->
+        <div class="flex p-4 -mt-8" id="hunters">
+          <HuntersRow :hunters="hunters" />
+        </div>
+        <!-- Inventory section -->
       </div>
     </div>
   </div>
