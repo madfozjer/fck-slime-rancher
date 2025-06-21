@@ -1,12 +1,13 @@
 <script setup>
 // Import Vue Composition API helpers
-import { ref, watch, computed } from 'vue'
+import { ref, watch, computed, onMounted, onUnmounted } from 'vue'
 import Hunter from '@/components/Hunter.vue'
 import { useMobsStore } from '@/stores/Mobs.js'
 import { damageTexts, damageColors, damageRotations } from '@/stores/DamageTexts.js'
 import MobDisplay from '@/components/MobDisplay.vue'
 import CoinCounter from '@/components/CoinCounter.vue'
 import HuntersRow from '@/components/HuntersRow.vue'
+import { useHuntersStore } from '@/stores/Hunters.js'
 
 // Use the mobs store
 const mobsStore = useMobsStore()
@@ -125,13 +126,54 @@ function increment() {
 // State for showing damaged image
 const showDamagedImg = ref(false)
 
-// Example hunters data (replace with real data as needed)
+// Use the hunters store
+const huntersStore = useHuntersStore()
+
+// Use hunters from the store
 const hunters = [
-  { name: 'Jacob', color: 'orange' },
-  { name: 'Jacob', color: 'lime' },
-  { name: 'Jacob' },
-  { name: 'Jacob' },
+  huntersStore.getHunterByName('Jacob'),
+  huntersStore.getHunterByName('Jacob'),
+  huntersStore.getHunterByName('Jacob'),
+  huntersStore.getHunterByName('Jacob'),
 ]
+
+// Calculate the average attack interval based on all hunters' speed
+const avgAttackInterval = computed(() => {
+  // Speed is attacks per second, so interval = 1000 / speed (ms)
+  // Average the intervals of all hunters
+  const intervals = hunters.map((h) => (h?.speed ? 1000 / h.speed : 1000))
+  if (intervals.length === 0) return 1000
+  return intervals.reduce((a, b) => a + b, 0) / intervals.length
+})
+
+let attackInterval = null
+
+onMounted(() => {
+  attackInterval = setInterval(() => {
+    if (hp.value > 0) {
+      // Sum all hunters' attack values
+      const totalAtk = hunters.reduce((sum, h) => sum + (h?.attack || 0), 0)
+      if (totalAtk > 0) {
+        hp.value = Math.max(0, Math.round((hp.value - totalAtk) * 100) / 100)
+        // If mob dies, move to next and add coins
+        if (hp.value === 0 && currentMobIndex.value < mobQueue.length - 1) {
+          currentMobIndex.value++
+          count.value += mob.value.price
+        }
+      }
+    }
+  }, avgAttackInterval.value)
+})
+
+onUnmounted(() => {
+  if (attackInterval) clearInterval(attackInterval)
+})
+
+// DPS calculation (damage per second)
+const dps = computed(() => {
+  // For each hunter, their DPS is attack * speed
+  return hunters.reduce((sum, h) => sum + (h?.attack || 0) * (h?.speed || 1), 0).toFixed(2)
+})
 </script>
 
 <template>
@@ -154,9 +196,18 @@ const hunters = [
       />
       <CoinCounter :count="count" />
     </div>
-    <!-- Hunters section with circular background -->
-    <div class="flex justify-center w-fit p-4 border ml-auto" id="hunters">
-      <HuntersRow :hunters="hunters" />
+
+    <div class="flex flex-col ml-auto w-fit border">
+      <!-- DPS display above hunters -->
+      <div class="w-full flex justify-center items-center mt-2 mb-1">
+        <div class="text-lg font-bold text-blue-700 bg-blue-100 rounded px-4 py-1 shadow">
+          DPS: {{ dps }}
+        </div>
+      </div>
+      <!-- Hunters section with circular background -->
+      <div class="flex p-4 -mt-8" id="hunters">
+        <HuntersRow :hunters="hunters" />
+      </div>
     </div>
   </div>
 </template>
