@@ -6,6 +6,7 @@ export const useHuntersStore = defineStore('hunters', {
       {
         id: 1,
         name: 'Jacob',
+        emoji: '🐱🤓',
         color: 'orange',
         speed: 0.33,
         img: '/hunters/Jacob/Jacob.png',

@@ -5,15 +5,19 @@ import { useAnimationStore } from '@/stores/Animation.js'
 const props = defineProps({
   id: Number,
   name: String,
+  emoji: String,
   color: String,
   img: String,
-  attack: Number,
+  weapon: Object,
+  rarity: String,
+  speed: Number,
   // Add more hunter stats as needed
 })
 
 const animationStore = useAnimationStore()
 const isShaking = ref(false)
 const isAttacking = ref(false)
+const isTooltipVisible = ref(false)
 
 watch(
   () => animationStore.hunterShakes[props.id],
@@ -34,7 +38,11 @@ watch(
 </script>
 
 <template>
-  <div class="w-fit h-fit flex items-center justify-center bg-transparent relative">
+  <div
+    class="w-fit h-fit flex items-center justify-center bg-transparent relative"
+    @mouseenter="isTooltipVisible = true"
+    @mouseleave="isTooltipVisible = false"
+  >
     <!-- Circle background: bigger than cat, 50% transparent, with shadow -->
     <div
       class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full shadow-lg"
@@ -59,12 +67,31 @@ watch(
       class="relative z-10"
       :class="isShaking ? 'animate-hunter-shake' : ''"
     />
-    <!-- Optionally show stats below -->
+    <!-- Info tooltip -->
     <div
-      v-if="props.attack !== undefined"
-      class="absolute bottom-0 left-1/2 -translate-x-1/2 text-xs font-bold bg-white bg-opacity-70 rounded px-2 py-0.5 z-20"
+      v-if="isTooltipVisible"
+      class="absolute right-full top-1/2 -translate-y-1/2 mr-4 bg-white bg-opacity-90 border-2 rounded shadow-lg px-5 py-4 text-sm z-30 pointer-events-none transition-opacity duration-200 overflow-hidden"
+      :style="`min-width: 320px; max-width: 400px; white-space: normal; border-color: #fbbf24; border-style: solid; border-width: 2px;`"
     >
-      ATK: {{ props.attack }}
+      <div class="font-bold mb-2 flex items-center gap-2">
+        {{ props.name }}<span v-if="props.emoji">{{ props.emoji }}</span>
+      </div>
+      <div v-if="props.weapon" class="mb-1">
+        <span class="font-semibold">Weapon:</span> {{ props.weapon.name }}
+        <span v-if="props.weapon.physDamage !== undefined">
+          | Phys: {{ props.weapon.physDamage }}</span
+        >
+        <span v-if="props.weapon.psiDamage !== undefined">
+          | Psi: {{ props.weapon.psiDamage }}</span
+        >
+      </div>
+      <div v-if="props.rarity" class="mt-1">
+        <span class="font-semibold">Rarity:</span>
+        <span class="ml-1 text-green-700 font-semibold">{{ props.rarity }}</span>
+      </div>
+      <div v-if="props.speed" class="mt-1">
+        <span class="font-semibold">Speed:</span> {{ props.speed }}
+      </div>
     </div>
   </div>
 </template>

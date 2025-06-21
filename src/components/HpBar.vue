@@ -1,7 +1,7 @@
 <template>
-  <div class="w-1/2 mt-1">
+  <div class="w-full mt-1 flex justify-center flex-col items-center">
     <div
-      class="w-full h-2 bg-lime-200 rounded-full border-2 border-lime-500 overflow-hidden shadow-inner"
+      class="w-full max-w-md h-2 bg-lime-200 rounded-full border-2 border-lime-500 overflow-hidden shadow-inner"
     >
       <div
         class="h-full transition-all duration-300"
@@ -10,7 +10,7 @@
       ></div>
     </div>
     <div
-      class="text-[10px] text-lime-800 font-extrabold mt-0.5 text-center select-none"
+      class="text-[18px] text-lime-800 font-extrabold mt-0.5 text-center select-none"
       :class="isShaking ? 'animate-hp-shake' : ''"
       style="
         font-family:

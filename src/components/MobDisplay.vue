@@ -1,6 +1,10 @@
 <template>
-  <div class="flex flex-col items-center w-full">
-    <div class="relative">
+  <div v-if="mob && mob.img" class="flex flex-col items-center w-full">
+    <div
+      class="relative"
+      @mouseenter="isTooltipVisible = true"
+      @mouseleave="isTooltipVisible = false"
+    >
       <img
         :src="showDamagedImg ? mob.damagedImg : mob.img"
         :alt="mob.alt"
@@ -9,7 +13,27 @@
         height="270"
         @click="onDamage"
         :class="slimeShaking ? 'animate-slime-shake' : ''"
+        @mouseenter="isTooltipVisible = true"
+        @mouseleave="isTooltipVisible = false"
       />
+      <!-- Mob info tooltip -->
+      <div
+        v-if="isTooltipVisible"
+        class="absolute right-full top-1/2 -translate-y-1/2 mr-4 bg-white bg-opacity-90 border-2 rounded shadow-lg px-7 py-6 text-base z-30 pointer-events-none transition-opacity duration-200 overflow-hidden"
+        :style="`min-width: 320px; max-width: 480px; white-space: normal; border-color: ${mob.borderColor || '#22c55e'}; border-style: solid; border-width: 2px;`"
+      >
+        <div class="font-bold mb-2">{{ mob.name }}</div>
+        <div v-if="mob.description" class="italic text-gray-500 mb-2 text-base">
+          {{ mob.description }}
+        </div>
+        <div v-if="hp !== undefined && mob.maxHp !== undefined">HP: {{ hp }} / {{ mob.maxHp }}</div>
+        <div v-if="mob.price !== undefined">Price: {{ mob.price }}</div>
+        <div v-if="mob.attack !== undefined">ATK: {{ mob.attack }}</div>
+        <div v-if="mob.rarity">
+          Rarity: <span class="ml-1 text-green-700 font-semibold">{{ mob.rarity }}</span>
+        </div>
+        <div v-if="mob.type">Type: {{ mob.type }}</div>
+      </div>
       <DamagePop
         :show="showDamagePop"
         :text="damagePopText"
@@ -30,10 +54,18 @@
           2px 2px 0 #bbf7d0,
           4px 4px 0 #22d3ee;
       "
+      @mouseenter="isTooltipVisible = true"
+      @mouseleave="isTooltipVisible = false"
     >
       {{ mob.name }}
     </div>
-    <HpBar :hp="hp" :maxHp="mob.maxHp" :isShaking="slimeShaking" />
+    <div
+      class="w-full mt-1"
+      @mouseenter="isTooltipVisible = true"
+      @mouseleave="isTooltipVisible = false"
+    >
+      <HpBar :hp="hp" :maxHp="mob.maxHp" :isShaking="slimeShaking" />
+    </div>
   </div>
 </template>
 
@@ -58,6 +90,7 @@ const props = defineProps({
 
 const animationStore = useAnimationStore()
 const slimeShaking = ref(false)
+const isTooltipVisible = ref(false)
 
 watch(
   () => animationStore.mobShake,
