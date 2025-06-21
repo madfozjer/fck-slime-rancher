@@ -210,6 +210,52 @@ const dps = computed(() => {
 })
 
 const dpsTooltip = ref(false)
+let draggedWeaponId = ref(null)
+let draggedHunterId = ref(null)
+
+function onDragWeapon(weaponId) {
+  draggedWeaponId.value = weaponId
+}
+
+function onDragHunter(hunterId) {
+  draggedHunterId.value = hunterId
+}
+
+function onDropWeapon(hunterId) {
+  if (draggedWeaponId.value == null) return
+  // Find the hunter and weapon
+  const hunter = hunters.value.find((h) => h.id === hunterId)
+  const weaponIdx = inventoryStore.weapons.findIndex((w) => w.id === draggedWeaponId.value)
+  if (!hunter || weaponIdx === -1) return
+  // Swap the hunter's weapon with the inventory weapon
+  const oldWeapon = hunter.weapon
+  hunter.weapon = inventoryStore.weapons[weaponIdx]
+  inventoryStore.weapons[weaponIdx] = oldWeapon
+  // Trigger shake animation for this hunter
+  animationStore.triggerHunterShake(hunter.id)
+  draggedWeaponId.value = null
+}
+
+function onDropHunter(targetHunterId) {
+  if (draggedHunterId.value == null) return
+  // Find the dragged hunter in inventory
+  const invIdx = inventoryStore.hunters.findIndex((h) => h.id === draggedHunterId.value)
+  if (invIdx === -1) return
+  // Replace the target hunter and put the old one back to inventory
+  const idxTarget = hunters.value.findIndex((h) => h.id === targetHunterId)
+  if (idxTarget === -1) return
+  const newHunter = inventoryStore.hunters.splice(invIdx, 1)[0]
+  // Save the weapon from the currently equipped hunter
+  const oldWeapon = hunters.value[idxTarget].weapon
+  // Give the swapped-in hunter the old weapon
+  newHunter.weapon = oldWeapon
+  // Put the old hunter (with NO weapon) back to inventory
+  const oldHunter = { ...hunters.value[idxTarget], weapon: null }
+  inventoryStore.hunters.push(oldHunter)
+  hunters.value[idxTarget] = newHunter
+  animationStore.triggerHunterShake(newHunter.id)
+  draggedHunterId.value = null
+}
 </script>
 
 <template>
@@ -235,9 +281,13 @@ const dpsTooltip = ref(false)
       </div>
     </div>
 
-    <div class="flex">
+    <div class="flex h-1/4">
       <div class="w-2/3 h-full">
-        <Inventory class="w-full h-full overflow-y-scroll" />
+        <Inventory
+          class="w-full h-full overflow-y-scroll"
+          @drag-weapon="onDragWeapon"
+          @drag-hunter="onDragHunter"
+        />
       </div>
       <div class="flex flex-col ml-auto w-1/3 border">
         <!-- DPS display above hunters -->
@@ -293,7 +343,7 @@ const dpsTooltip = ref(false)
                 Final Total: <span class="text-orange-600">{{ dps }}</span>
               </div>
             </div>
-            DPS: {{ dps }}oka
+            DPS: {{ dps }}
             <span class="block text-xs text-blue-900 font-normal mt-0.5"
               >Hunters attack every {{ (avgAttackInterval / 1000).toFixed(2) }}s</span
             >
@@ -301,7 +351,7 @@ const dpsTooltip = ref(false)
         </div>
         <!-- Hunters section with circular background -->
         <div class="flex p-4 -mt-8" id="hunters">
-          <HuntersRow :hunters="hunters" />
+          <HuntersRow :hunters="hunters" @drop-weapon="onDropWeapon" @drop-hunter="onDropHunter" />
         </div>
         <!-- Inventory section -->
       </div>

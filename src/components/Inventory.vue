@@ -1,9 +1,13 @@
 <script setup>
 import { ref } from 'vue'
 import { useInventoryStore } from '@/stores/Inventory.js'
+import HunterTooltip from './HunterTooltip.vue'
+import WeaponTooltip from './WeaponTooltip.vue'
 
 const inventoryStore = useInventoryStore()
 const inventoryTab = ref('hunters')
+const showHunterTooltip = ref(null)
+const showWeaponTooltip = ref(null)
 </script>
 
 <template>
@@ -42,11 +46,21 @@ const inventoryTab = ref('hunters')
           <div
             v-for="h in inventoryStore.hunters"
             :key="h.id"
-            class="flex flex-col items-center p-1 border rounded bg-white/80"
+            class="flex flex-col items-center p-1 border rounded bg-white/80 cursor-grab relative group"
+            draggable="true"
+            @dragstart="$emit('drag-hunter', h.id)"
+            @mouseenter="showHunterTooltip = h.id"
+            @mouseleave="showHunterTooltip = null"
           >
             <img :src="h.img" :alt="h.name" class="w-10 h-10 rounded-full border mb-1" />
             <span class="text-xs font-semibold text-blue-900 text-center">{{ h.name }}</span>
             <span class="text-xs text-gray-500 text-center">{{ h.rarity }}</span>
+            <!-- Tooltip -->
+            <HunterTooltip
+              v-if="h.name && showHunterTooltip === h.id"
+              :hunter="h"
+              position="right"
+            />
           </div>
         </div>
       </div>
@@ -62,12 +76,22 @@ const inventoryTab = ref('hunters')
           <div
             v-for="w in inventoryStore.weapons"
             :key="w.id"
-            class="flex flex-col items-center p-1 border rounded bg-white/80"
+            class="flex flex-col items-center p-1 border rounded bg-white/80 cursor-grab relative group"
+            draggable="true"
+            @dragstart="$emit('drag-weapon', w.id)"
+            @mouseenter="showWeaponTooltip = w.id"
+            @mouseleave="showWeaponTooltip = null"
           >
             <span class="text-xs font-semibold text-blue-900 text-center">{{ w.name }}</span>
             <span class="text-xs text-gray-500 text-center"
               >Phys: {{ w.physDamage }}, Psi: {{ w.psiDamage }}</span
             >
+            <!-- Tooltip -->
+            <WeaponTooltip
+              v-if="w.name && showWeaponTooltip === w.id"
+              :weapon="w"
+              position="right"
+            />
           </div>
         </div>
       </div>

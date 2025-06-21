@@ -1,6 +1,7 @@
 <script setup>
 import { defineProps, ref, watch } from 'vue'
 import { useAnimationStore } from '@/stores/Animation.js'
+import HunterTooltip from '@/components/HunterTooltip.vue'
 
 const props = defineProps({
   id: Number,
@@ -43,6 +44,8 @@ watch(
     class="w-fit h-fit flex items-center justify-center bg-transparent relative"
     @mouseenter="isTooltipVisible = true"
     @mouseleave="isTooltipVisible = false"
+    @dragover.prevent
+    @drop="$emit('drop-weapon', props.id)"
   >
     <!-- Circle background: bigger than cat, 50% transparent, with shadow -->
     <div
@@ -69,42 +72,7 @@ watch(
       :class="isShaking ? 'animate-hunter-shake' : ''"
     />
     <!-- Info tooltip -->
-    <div
-      v-if="isTooltipVisible"
-      class="absolute right-full top-1/2 -translate-y-1/2 mr-4 bg-white bg-opacity-90 border-2 rounded shadow-lg px-5 py-4 text-sm z-30 pointer-events-none transition-opacity duration-200 overflow-hidden"
-      :style="`
-        min-width: 320px; max-width: 400px; white-space: normal;
-        border-color: ${props.color ? `var(--tw-bg-${props.color}-400, ${props.color})` : '#fbbf24'};
-        border-style: solid; border-width: 2px;`"
-    >
-      <div class="font-bold mb-2 flex items-center gap-2">
-        {{ props.name }}<span v-if="props.emoji">{{ props.emoji }}</span>
-      </div>
-      <div v-if="props.weapon" class="mb-1">
-        <span class="font-semibold">Weapon:</span> {{ props.weapon.name }}
-        <span v-if="props.weapon.physDamage !== undefined">
-          | <span class="text-red-600">Phys: {{ props.weapon.physDamage }}</span></span
-        >
-        <span v-if="props.weapon.psiDamage !== undefined">
-          | <span class="text-purple-700">Psi: {{ props.weapon.psiDamage }}</span></span
-        >
-      </div>
-      <div v-if="props.modifier" class="mb-1">
-        <span class="font-semibold">Modifiers:</span>
-        <span class="ml-1">
-          <span class="text-red-600">Phys x{{ props.modifier.phys }}</span
-          >,
-          <span class="text-purple-700">Psi x{{ props.modifier.psi }}</span>
-        </span>
-      </div>
-      <div v-if="props.rarity" class="mt-1">
-        <span class="font-semibold">Rarity:</span>
-        <span class="ml-1 text-green-700 font-semibold">{{ props.rarity }}</span>
-      </div>
-      <div v-if="props.speed" class="mt-1">
-        <span class="font-semibold">Speed:</span> {{ props.speed }}
-      </div>
-    </div>
+    <HunterTooltip v-if="isTooltipVisible" :hunter="props" position="left" />
   </div>
 </template>
 

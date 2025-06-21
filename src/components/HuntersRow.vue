@@ -15,6 +15,9 @@ const props = defineProps({
       v-bind="hunter"
       :modifier="hunter.modifier"
       :shake="animationStore.hunterShakes[hunter.id]"
+      @drop-weapon="$emit('drop-weapon', hunter.id)"
+      @dragover.prevent
+      @drop="$emit('drop-hunter', hunter.id)"
     />
   </div>
 </template>
