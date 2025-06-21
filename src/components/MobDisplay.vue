@@ -43,7 +43,7 @@
       />
     </div>
     <div
-      class="mt-2 text-xl font-extrabold text-green-700 drop-shadow-lg tracking-wider px-0 py-0"
+      class="mt-2 text-xl font-extrabold text-green-700 drop-shadow-lg tracking-wider px-0 py-0 hover:cursor-default"
       :class="slimeShaking ? 'animate-hp-shake' : ''"
       style="
         background: none;

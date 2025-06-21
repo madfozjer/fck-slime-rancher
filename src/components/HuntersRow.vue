@@ -13,6 +13,7 @@ const props = defineProps({
       v-for="(hunter, idx) in hunters"
       :key="`${hunter.name}-${idx}`"
       v-bind="hunter"
+      :modifier="hunter.modifier"
       :shake="animationStore.hunterShakes[hunter.id]"
     />
   </div>

@@ -17,6 +17,21 @@ export const useHuntersStore = defineStore('hunters', {
           psi: 1, // x1 psychic damage (no change)
         },
       },
+      {
+        id: 2,
+        name: 'Dandy',
+        emoji: '🐱🦇',
+        color: 'gray',
+        speed: 0.2,
+        img: '/hunters/Dandy/Dandy.png',
+        weapon: null,
+        rarity: 'Normal',
+        modifier: {
+          phys: 0.5, // x0.5 physical damage
+          psi: 3, // x3 psychic damage
+        },
+      },
+
       // Add more hunters here as needed, following the same structure
     ],
   }),
