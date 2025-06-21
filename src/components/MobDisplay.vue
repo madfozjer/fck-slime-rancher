@@ -8,7 +8,7 @@
         width="270"
         height="270"
         @click="onDamage"
-        :class="isShaking ? 'animate-slime-shake' : ''"
+        :class="slimeShaking ? 'animate-slime-shake' : ''"
       />
       <DamagePop
         :show="showDamagePop"
@@ -20,7 +20,7 @@
     </div>
     <div
       class="mt-2 text-xl font-extrabold text-green-700 drop-shadow-lg tracking-wider px-0 py-0"
-      :class="isShaking ? 'animate-hp-shake' : ''"
+      :class="slimeShaking ? 'animate-hp-shake' : ''"
       style="
         background: none;
         font-family:
@@ -33,17 +33,20 @@
     >
       {{ mob.name }}
     </div>
-    <HpBar :hp="hp" :maxHp="mob.maxHp" :isShaking="isShaking" />
+    <HpBar :hp="hp" :maxHp="mob.maxHp" :isShaking="slimeShaking" />
   </div>
 </template>
 
 <script setup>
 import HpBar from './HpBar.vue'
 import DamagePop from './DamagePop.vue'
+import { useAnimationStore } from '@/stores/Animation.js'
+import { ref, watch } from 'vue'
+
 const props = defineProps({
   mob: Object,
   hp: Number,
-  isShaking: Boolean,
+  isShaking: Boolean, // keep for compatibility, but will use store
   showDamagedImg: Boolean,
   showDamagePop: Boolean,
   damagePopText: String,
@@ -52,6 +55,24 @@ const props = defineProps({
   damagePopStyle: Object,
   onDamage: Function,
 })
+
+const animationStore = useAnimationStore()
+const slimeShaking = ref(false)
+
+watch(
+  () => animationStore.mobShake,
+  (val, oldVal) => {
+    if (val && !oldVal) {
+      slimeShaking.value = false
+      void document.body.offsetWidth
+      slimeShaking.value = true
+      setTimeout(() => {
+        slimeShaking.value = false
+        animationStore.resetMobShake()
+      }, 400)
+    }
+  },
+)
 </script>
 
 <style scoped>

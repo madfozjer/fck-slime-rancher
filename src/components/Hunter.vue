@@ -1,14 +1,36 @@
 <script setup>
-import { defineProps } from 'vue'
+import { defineProps, ref, watch } from 'vue'
+import { useAnimationStore } from '@/stores/Animation.js'
 
-// Accept all hunter properties via v-bind for flexibility
 const props = defineProps({
+  id: Number,
   name: String,
   color: String,
   img: String,
   attack: Number,
   // Add more hunter stats as needed
 })
+
+const animationStore = useAnimationStore()
+const isShaking = ref(false)
+const isAttacking = ref(false)
+
+watch(
+  () => animationStore.hunterShakes[props.id],
+  (val, oldVal) => {
+    if (val && !oldVal) {
+      isShaking.value = false
+      isAttacking.value = true
+      void document.body.offsetWidth // force reflow
+      isShaking.value = true
+      setTimeout(() => {
+        isShaking.value = false
+        isAttacking.value = false
+        animationStore.resetHunterShake(props.id)
+      }, 400)
+    }
+  },
+)
 </script>
 
 <template>
@@ -26,11 +48,16 @@ const props = defineProps({
     ></div>
     <!-- Hunter image -->
     <img
-      :src="props.img || `/hunters/${props.name}/${props.name}.png`"
+      :src="
+        isAttacking
+          ? `/hunters/${props.name}/${props.name}-attack.png`
+          : props.img || `/hunters/${props.name}/${props.name}.png`
+      "
       :alt="props.name"
       width="128"
       height="128"
       class="relative z-10"
+      :class="isShaking ? 'animate-hunter-shake' : ''"
     />
     <!-- Optionally show stats below -->
     <div
@@ -41,3 +68,29 @@ const props = defineProps({
     </div>
   </div>
 </template>
+
+<style scoped>
+@keyframes hunter-shake {
+  0% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-6px);
+  }
+  40% {
+    transform: translateX(6px);
+  }
+  60% {
+    transform: translateX(-4px);
+  }
+  80% {
+    transform: translateX(4px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+.animate-hunter-shake {
+  animation: hunter-shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+</style>

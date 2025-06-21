@@ -8,6 +8,9 @@ import MobDisplay from '@/components/MobDisplay.vue'
 import CoinCounter from '@/components/CoinCounter.vue'
 import HuntersRow from '@/components/HuntersRow.vue'
 import { useHuntersStore } from '@/stores/Hunters.js'
+import { useWeaponsStore } from '@/stores/Weapons.js'
+import { toRaw } from 'vue'
+import { useAnimationStore } from '@/stores/Animation.js'
 
 // Use the mobs store
 const mobsStore = useMobsStore()
@@ -32,7 +35,9 @@ watch(currentMobIndex, (idx) => {
 
 // For HP bar animation and shake effect
 const hpBar = ref(null)
-const isShaking = ref(false)
+const animationStore = useAnimationStore()
+
+const isShaking = computed(() => animationStore.mobShake)
 
 // Damage pop effect state
 const showDamagePop = ref(false)
@@ -83,10 +88,7 @@ const hpBarClass = computed(() => {
 // Watch for HP changes to trigger shake animation
 watch(hp, (newHp, oldHp) => {
   if (newHp < oldHp) {
-    isShaking.value = false
-    void hpBar.value?.offsetWidth
-    isShaking.value = true
-
+    animationStore.triggerMobShake()
     // Randomly show damaged image (30% chance)
     showDamagedImg.value = false
     if (Math.random() < 0.3) {
@@ -95,11 +97,6 @@ watch(hp, (newHp, oldHp) => {
         showDamagedImg.value = false
       }, 250)
     }
-
-    setTimeout(() => {
-      isShaking.value = false
-    }, 400)
-
     // Damage pop logic
     impactCounter++
     if (impactCounter >= nextImpactPop) {
@@ -128,20 +125,35 @@ const showDamagedImg = ref(false)
 
 // Use the hunters store
 const huntersStore = useHuntersStore()
+const weaponsStore = useWeaponsStore()
 
-// Use hunters from the store
-const hunters = [
-  huntersStore.getHunterByName('Jacob'),
-  huntersStore.getHunterByName('Jacob'),
-  huntersStore.getHunterByName('Jacob'),
-  huntersStore.getHunterByName('Jacob'),
-]
+// Use hunters from the store as a reactive array
+const hunters = ref([
+  {
+    ...huntersStore.getHunterByName('Jacob'),
+    weapon: weaponsStore.getWeaponById(1),
+    id: 1,
+  },
+  {
+    ...huntersStore.getHunterByName('Jacob'),
+    weapon: weaponsStore.getWeaponById(2),
+    id: 2,
+  },
+  {
+    ...huntersStore.getHunterByName('Jacob'),
+    weapon: weaponsStore.getWeaponById(1),
+    id: 3,
+  },
+  {
+    ...huntersStore.getHunterByName('Jacob'),
+    weapon: weaponsStore.getWeaponById(2),
+    id: 4,
+  },
+])
 
 // Calculate the average attack interval based on all hunters' speed
 const avgAttackInterval = computed(() => {
-  // Speed is attacks per second, so interval = 1000 / speed (ms)
-  // Average the intervals of all hunters
-  const intervals = hunters.map((h) => (h?.speed ? 1000 / h.speed : 1000))
+  const intervals = hunters.value.map((h) => (h?.speed ? 1000 / h.speed : 1000))
   if (intervals.length === 0) return 1000
   return intervals.reduce((a, b) => a + b, 0) / intervals.length
 })
@@ -151,8 +163,16 @@ let attackInterval = null
 onMounted(() => {
   attackInterval = setInterval(() => {
     if (hp.value > 0) {
-      // Sum all hunters' attack values
-      const totalAtk = hunters.reduce((sum, h) => sum + (h?.attack || 0), 0)
+      // Trigger shake for all hunters via animation store
+      hunters.value.forEach((h) => {
+        animationStore.triggerHunterShake(h.id)
+      })
+      // Sum all hunters' weapon damage (phys + psi), applying modifiers
+      const totalAtk = hunters.value.reduce((sum, h) => {
+        const w = h.weapon
+        const mod = h.modifier || { phys: 1, psi: 1 }
+        return sum + (w?.physDamage || 0) * (mod.phys || 1) + (w?.psiDamage || 0) * (mod.psi || 1)
+      }, 0)
       if (totalAtk > 0) {
         hp.value = Math.max(0, Math.round((hp.value - totalAtk) * 100) / 100)
         // If mob dies, move to next and add coins
@@ -171,8 +191,18 @@ onUnmounted(() => {
 
 // DPS calculation (damage per second)
 const dps = computed(() => {
-  // For each hunter, their DPS is attack * speed
-  return hunters.reduce((sum, h) => sum + (h?.attack || 0) * (h?.speed || 1), 0).toFixed(2)
+  // For each hunter, their DPS is ((phys*mod)+(psi*mod)) * speed
+  return hunters.value
+    .reduce((sum, h) => {
+      const w = h.weapon
+      const mod = h.modifier || { phys: 1, psi: 1 }
+      return (
+        sum +
+        ((w?.physDamage || 0) * (mod.phys || 1) + (w?.psiDamage || 0) * (mod.psi || 1)) *
+          (h?.speed || 1)
+      )
+    }, 0)
+    .toFixed(2)
 })
 </script>
 
