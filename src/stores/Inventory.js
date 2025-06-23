@@ -24,7 +24,7 @@ export const useInventoryStore = defineStore('inventory', {
 
         if (hunter) {
           const newHunter = { ...hunter }
-          newHunter.id = hunter.id + 1
+          newHunter.id = 1 + this.hunters.length
           this.hunters.push(newHunter)
           console.log(`Hunter "${newHunter.name}" added to inventory.`)
         } else {

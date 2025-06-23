@@ -290,7 +290,7 @@ const handleAnimationEnd = (type) => {
 </script>
 
 <template>
-  <div class="h-screen w-screen flex-col">
+  <div class="h-screen w-screen flex-col overflow-hidden" id="app">
     <div class="flex w-full h-3/4">
       <div class="w-2/3 h-full p-1">
         <div class="flex mb-2">
@@ -339,7 +339,7 @@ const handleAnimationEnd = (type) => {
 
     <div class="flex h-1/4">
       <div class="w-2/3 h-full">
-        <Inventory class="w-full h-full" @drag-weapon="onDragWeapon" @drag-hunter="onDragHunter" />
+        <Inventory @drag-weapon="onDragWeapon" @drag-hunter="onDragHunter" />
       </div>
       <div class="flex flex-col ml-auto w-1/3 border">
         <!-- DPS display above hunters -->
@@ -446,5 +446,18 @@ const handleAnimationEnd = (type) => {
 .damage-pop-enter-from,
 .damage-pop-leave-to {
   opacity: 0;
+}
+
+/* Ensure these are in your global CSS */
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+#app {
+  height: 100%;
 }
 </style>

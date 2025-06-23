@@ -68,16 +68,4 @@ const tooltipClass = computed(() => {
 :deep(.z-\[9999\]) {
   z-index: 9999 !important;
 }
-
-:global(body),
-:global(#app),
-:global(.h-screen),
-:global(.w-screen),
-:global(.flex-col),
-:global(.flex),
-:global(.overflow-y-auto),
-:global(.overflow-y-scroll),
-:global(.overflow-hidden) {
-  overflow: visible !important;
-}
 </style>

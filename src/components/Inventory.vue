@@ -13,8 +13,8 @@ const showWeaponTooltip = ref(null)
 <template>
   <div
     id="inventory"
-    class="bg-white/90 border-t rounded shadow p-3 w-64 flex flex-col"
-    style="max-height: 320px; min-height: 180px"
+    class="bg-white/90 border-t rounded shadow p-3 w-full **h-full** flex flex-col"
+    style="min-height: 180px"
   >
     <div class="font-bold text-base text-blue-900 mb-2">Inventory</div>
     <div class="flex mb-2">
@@ -33,7 +33,8 @@ const showWeaponTooltip = ref(null)
         Weapons
       </button>
     </div>
-    <div class="flex-1 overflow-y-scroll" style="min-height: 100px; max-height: 200px">
+
+    <div class="flex-1 overflow-y-scroll" style="min-height: 0px">
       <div v-if="inventoryTab === 'hunters'">
         <div class="text-xs text-blue-900 mb-1">Hunters: {{ inventoryStore.hunters.length }}</div>
         <div
@@ -55,7 +56,6 @@ const showWeaponTooltip = ref(null)
             <img :src="h.img" :alt="h.name" class="w-10 h-10 rounded-full border mb-1" />
             <span class="text-xs font-semibold text-blue-900 text-center">{{ h.name }}</span>
             <span class="text-xs text-gray-500 text-center">{{ h.rarity }}</span>
-            <!-- Tooltip -->
             <HunterTooltip
               v-if="h.name && showHunterTooltip === h.id"
               :hunter="h"
@@ -86,7 +86,6 @@ const showWeaponTooltip = ref(null)
             <span class="text-xs text-gray-500 text-center"
               >Phys: {{ w.physDamage }}, Psi: {{ w.psiDamage }}</span
             >
-            <!-- Tooltip -->
             <WeaponTooltip
               v-if="w.name && showWeaponTooltip === w.id"
               :weapon="w"
