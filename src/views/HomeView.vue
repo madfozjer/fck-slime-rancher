@@ -262,7 +262,7 @@ function onDropHunter(targetHunterId) {
   <div class="h-screen w-screen flex-col">
     <div class="flex w-full h-3/4">
       <div
-        class="ml-auto border w-1/3 h-full min-h-3/4 flex flex-col items-center justify-start relative"
+        class="ml-auto border-l w-1/3 h-full min-h-3/4 flex flex-col items-center justify-start relative"
         id="mob-container"
       >
         <MobDisplay

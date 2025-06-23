@@ -18,13 +18,12 @@ const tooltipClass = computed(() => {
     '-translate-y-1/2',
     'bg-white',
     'bg-opacity-90',
-    'border-2',
     'rounded',
     'shadow-lg',
     'px-5',
     'py-4',
     'text-sm',
-    'z-[9999]', // use a very high z-index for tooltips
+    'z-[9999]',
     'pointer-events-none',
     'transition-opacity',
     'duration-200',
@@ -37,19 +36,18 @@ const tooltipClass = computed(() => {
   <div
     v-if="hunter"
     :class="tooltipClass"
+    class="whitespace-normal"
     :style="{
       minWidth: '320px',
       maxWidth: '400px',
-      whiteSpace: 'normal',
-      borderColor: hunter.color || '#fbbf24',
-      borderStyle: 'solid',
-      borderWidth: '2px',
+      border: '2px solid ' + (hunter.color || '#fbbf24'),
+      boxShadow: '0 4px 24px 0 rgba(0,0,0,0.10)',
     }"
   >
-    <div class="font-bold mb-2 flex items-center gap-2">
+    <div class="font-bold mb-2 flex items-center gap-2" style="border: none; background: none">
       {{ hunter.name }}<span v-if="hunter.emoji">{{ hunter.emoji }}</span>
     </div>
-    <div v-if="hunter.weapon" class="mb-1">
+    <div v-if="hunter.weapon" class="mb-1" style="border: none; background: none">
       <span class="font-semibold">Weapon:</span> {{ hunter.weapon.name }}
       <span v-if="hunter.weapon.physDamage !== undefined">
         | <span class="text-red-600">Phys: {{ hunter.weapon.physDamage }}</span>
@@ -58,7 +56,7 @@ const tooltipClass = computed(() => {
         | <span class="text-purple-700">Psi: {{ hunter.weapon.psiDamage }}</span>
       </span>
     </div>
-    <div v-if="hunter.modifier" class="mb-1">
+    <div v-if="hunter.modifier" class="mb-1" style="border: none; background: none">
       <span class="font-semibold">Modifiers:</span>
       <span class="ml-1">
         <span class="text-red-600">Phys x{{ hunter.modifier.phys }}</span>
@@ -66,11 +64,11 @@ const tooltipClass = computed(() => {
         <span class="text-purple-700">Psi x{{ hunter.modifier.psi }}</span>
       </span>
     </div>
-    <div v-if="hunter.rarity" class="mt-1">
+    <div v-if="hunter.rarity" class="mt-1" style="border: none; background: none">
       <span class="font-semibold">Rarity:</span>
       <span class="ml-1 text-green-700 font-semibold">{{ hunter.rarity }}</span>
     </div>
-    <div v-if="hunter.speed" class="mt-1">
+    <div v-if="hunter.speed" class="mt-1" style="border: none; background: none">
       <span class="font-semibold">Speed:</span> {{ hunter.speed }}
     </div>
   </div>

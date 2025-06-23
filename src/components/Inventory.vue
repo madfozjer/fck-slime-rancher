@@ -13,7 +13,7 @@ const showWeaponTooltip = ref(null)
 <template>
   <div
     id="inventory"
-    class="bg-white/90 border rounded shadow p-3 w-64 flex flex-col"
+    class="bg-white/90 border-t rounded shadow p-3 w-64 flex flex-col"
     style="max-height: 320px; min-height: 180px"
   >
     <div class="font-bold text-base text-blue-900 mb-2">Inventory</div>

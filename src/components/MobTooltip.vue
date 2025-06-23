@@ -18,7 +18,6 @@ const tooltipClass = computed(() => {
     '-translate-y-1/2',
     'bg-white',
     'bg-opacity-90',
-    'border-2',
     'rounded',
     'shadow-lg',
     'px-7',
@@ -41,9 +40,8 @@ const tooltipClass = computed(() => {
       minWidth: '320px',
       maxWidth: '480px',
       whiteSpace: 'normal',
-      borderColor: mob.borderColor || '#22c55e',
-      borderStyle: 'solid',
-      borderWidth: '2px',
+      border: '2px solid ' + (mob.borderColor || '#22c55e'), // single border only
+      boxShadow: '0 4px 24px 0 rgba(0,0,0,0.10)',
     }"
   >
     <div class="font-bold mb-2">{{ mob.name }}</div>

@@ -17,7 +17,6 @@ const tooltipClass = computed(() => {
     '-translate-y-1/2',
     'bg-white',
     'bg-opacity-90',
-    'border-2',
     'rounded',
     'shadow-lg',
     'px-5',
@@ -40,9 +39,8 @@ const tooltipClass = computed(() => {
       minWidth: '220px',
       maxWidth: '320px',
       whiteSpace: 'normal',
-      borderColor: weapon.color || '#60a5fa',
-      borderStyle: 'solid',
-      borderWidth: '2px',
+      border: '2px solid ' + (weapon.color || '#60a5fa'), // single border only
+      boxShadow: '0 4px 24px 0 rgba(0,0,0,0.10)',
     }"
   >
     <div class="font-bold mb-2 flex items-center gap-2">

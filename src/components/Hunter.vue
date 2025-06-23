@@ -49,13 +49,11 @@ watch(
   >
     <!-- Circle background: bigger than cat, 50% transparent, with shadow -->
     <div
-      class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full shadow-lg"
+      class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full shadow-lg opacity-[0.4] z-1"
       :style="{
         background: props.color ? `var(--tw-bg-${props.color}-400, ${props.color})` : '#a3a3a3',
         width: '114px',
         height: '114px',
-        opacity: 0.4,
-        zIndex: 1,
       }"
     ></div>
     <!-- Hunter image -->
