@@ -33,7 +33,7 @@ const showWeaponTooltip = ref(null)
         Weapons
       </button>
     </div>
-    <div class="flex-1 overflow-y-auto" style="min-height: 100px; max-height: 200px">
+    <div class="flex-1 overflow-y-scroll" style="min-height: 100px; max-height: 200px">
       <div v-if="inventoryTab === 'hunters'">
         <div class="text-xs text-blue-900 mb-1">Hunters: {{ inventoryStore.hunters.length }}</div>
         <div

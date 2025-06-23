@@ -1,6 +1,7 @@
+// Inventory.js
 import { defineStore } from 'pinia'
-import { useHuntersStore } from './Hunters.js'
-import { useWeaponsStore } from './Weapons.js'
+import { useHuntersStore } from './Hunters.js' // Make sure paths are correct
+import { useWeaponsStore } from './Weapons.js' // Make sure paths are correct
 
 export const useInventoryStore = defineStore('inventory', {
   state: () => ({
@@ -9,11 +10,29 @@ export const useInventoryStore = defineStore('inventory', {
   }),
   actions: {
     initializeInventory() {
-      // For now, add all available hunters and weapons
       const huntersStore = useHuntersStore()
       const weaponsStore = useWeaponsStore()
       this.hunters = [...huntersStore.hunters]
       this.weapons = [...weaponsStore.weapons]
+      console.log('Inventory initialized.')
+    },
+
+    async addHunter(name) {
+      const huntersStore = useHuntersStore()
+      try {
+        const hunter = huntersStore.getHunterByName(name)
+
+        if (hunter) {
+          const newHunter = { ...hunter }
+          newHunter.id = hunter.id + 1
+          this.hunters.push(newHunter)
+          console.log(`Hunter "${newHunter.name}" added to inventory.`)
+        } else {
+          console.warn(`Hunter "${name}" not found in HuntersStore.`)
+        }
+      } catch (error) {
+        console.error(`Error adding hunter "${name}":`, error)
+      }
     },
     // Add more inventory management actions here later
   },

@@ -54,7 +54,7 @@ const tooltipClass = computed(() => {
     }"
   >
     <div class="font-bold mb-2 flex items-center gap-2" style="border: none; background: none">
-      {{ hunter.name }}<span v-if="hunter.emoji">{{ hunter.emoji }}</span>
+      {{ hunter.name }} <span v-if="hunter.emoji">{{ hunter.emoji }}</span>
     </div>
     <div v-if="hunter.weapon" class="mb-1" style="border: none; background: none">
       <span class="font-semibold">Weapon:</span> {{ hunter.weapon.name }}

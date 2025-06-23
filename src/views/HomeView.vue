@@ -1,15 +1,15 @@
 <script setup>
 // Import Vue Composition API helpers
 import { ref, watch, computed, onMounted, onUnmounted } from 'vue'
-import Hunter from '@/components/Hunter.vue'
-import { useMobsStore } from '@/stores/Mobs.js'
+
 import { damageTexts, damageColors, damageRotations } from '@/stores/DamageTexts.js'
 import MobDisplay from '@/components/MobDisplay.vue'
 import CoinCounter from '@/components/CoinCounter.vue'
 import HuntersRow from '@/components/HuntersRow.vue'
+import { useMobsStore } from '@/stores/Mobs.js'
 import { useHuntersStore } from '@/stores/Hunters.js'
 import { useWeaponsStore } from '@/stores/Weapons.js'
-import { toRaw } from 'vue'
+import { usePlayerStore } from '@/stores/Player.js'
 import { useAnimationStore } from '@/stores/Animation.js'
 import { useInventoryStore } from '@/stores/Inventory.js'
 import Inventory from '@/components/Inventory.vue'
@@ -22,6 +22,9 @@ const topLeftTab = ref('gacha')
 // Use the mobs store
 const mobsStore = useMobsStore()
 
+// Use the player store to get the player's coin count
+const playerStore = usePlayerStore()
+
 // Generate mob queue from store
 const mobQueue = mobsStore.generateMobQueue(12)
 
@@ -30,8 +33,8 @@ const currentMobIndex = ref(0)
 // The current mob object (copied from mobQueue)
 const mob = ref({ ...mobQueue[currentMobIndex.value] })
 // The player's coin count
-const count = ref(0)
-const bits = ref(0)
+const count = ref(playerStore.coins)
+const bits = ref(playerStore.bits)
 // The current mob's HP
 const hp = ref(mob.value.hp)
 
@@ -336,11 +339,7 @@ const handleAnimationEnd = (type) => {
 
     <div class="flex h-1/4">
       <div class="w-2/3 h-full">
-        <Inventory
-          class="w-full h-full overflow-y-scroll"
-          @drag-weapon="onDragWeapon"
-          @drag-hunter="onDragHunter"
-        />
+        <Inventory class="w-full h-full" @drag-weapon="onDragWeapon" @drag-hunter="onDragHunter" />
       </div>
       <div class="flex flex-col ml-auto w-1/3 border">
         <!-- DPS display above hunters -->
