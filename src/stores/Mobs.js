@@ -29,8 +29,14 @@ export const useMobsStore = defineStore('mobs', () => {
     })
   }
 
+  function getMob(name) {
+    // Find a mob by its name
+    return mobs.value.find((mob) => mob.name === name)
+  }
+
   return {
     mobs,
     generateMobQueue,
+    getMob,
   }
 })

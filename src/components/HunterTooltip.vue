@@ -9,6 +9,15 @@ const props = defineProps({
   },
 })
 
+const hunterRarityClasses = {
+  Normal: 'text-gray-600',
+  Extra: 'text-green-600',
+}
+
+const rarityClass = computed(() => {
+  return hunterRarityClasses[props.hunter?.rarity] || 'text-gray-600'
+})
+
 const tooltipClass = computed(() => {
   // Position tooltip to the left (default) or right
   return [
@@ -66,7 +75,7 @@ const tooltipClass = computed(() => {
     </div>
     <div v-if="hunter.rarity" class="mt-1" style="border: none; background: none">
       <span class="font-semibold">Rarity:</span>
-      <span class="ml-1 text-green-700 font-semibold">{{ hunter.rarity }}</span>
+      <span class="ml-1 font-semibold" :class="rarityClass">{{ hunter.rarity }}</span>
     </div>
     <div v-if="hunter.speed" class="mt-1" style="border: none; background: none">
       <span class="font-semibold">Speed:</span> {{ hunter.speed }}

@@ -28,6 +28,20 @@ export const useHuntersStore = defineStore('hunters', {
         rarity: 'Normal',
         modifier: {
           phys: 0.5, // x0.5 physical damage
+          psi: 2, // x3 psychic damage
+        },
+      },
+      {
+        id: 3,
+        name: 'Cheese',
+        emoji: '🖤🌙',
+        color: 'black',
+        speed: 0.45,
+        img: '/hunters/Cheese/Cheese.png',
+        weapon: null,
+        rarity: 'Extra',
+        modifier: {
+          phys: 0, // no physical damage
           psi: 3, // x3 psychic damage
         },
       },
