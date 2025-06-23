@@ -13,6 +13,11 @@ import { toRaw } from 'vue'
 import { useAnimationStore } from '@/stores/Animation.js'
 import { useInventoryStore } from '@/stores/Inventory.js'
 import Inventory from '@/components/Inventory.vue'
+import Gacha from '@/components/Gacha.vue'
+import Base from '@/components/Base.vue'
+import BitsCounter from '@/components/BitsCounter.vue'
+
+const topLeftTab = ref('gacha')
 
 // Use the mobs store
 const mobsStore = useMobsStore()
@@ -26,6 +31,7 @@ const currentMobIndex = ref(0)
 const mob = ref({ ...mobQueue[currentMobIndex.value] })
 // The player's coin count
 const count = ref(0)
+const bits = ref(0)
 // The current mob's HP
 const hp = ref(mob.value.hp)
 
@@ -51,6 +57,10 @@ const damagePopRotation = ref('rotate-0')
 // Show damage pop randomly every 3-5 impacts
 let impactCounter = 0
 let nextImpactPop = Math.floor(Math.random() * 3) + 3 // 3-5
+
+// Resources shaking
+const shakeCointer = ref(false)
+const shakeBits = ref(false)
 
 function triggerDamagePop() {
   // Randomize position (as % offsets)
@@ -113,11 +123,14 @@ watch(hp, (newHp, oldHp) => {
 function increment() {
   if (hp.value > 0) {
     hp.value--
+    shakeCointer.value = true
     hp.value = Math.max(0, Math.round(hp.value * 100) / 100) // Round to 2 decimal place
+    if (Math.random() > 0.95) {
+      count.value += mob.value.price
+    }
     // If mob dies, move to next and add coins
     if (hp.value === 0 && currentMobIndex.value < mobQueue.length - 1) {
-      currentMobIndex.value++
-      count.value += mob.value.price
+      handleDeath()
     }
   }
 }
@@ -181,8 +194,7 @@ onMounted(() => {
         hp.value = Math.max(0, Math.round((hp.value - totalAtk) * 100) / 100)
         // If mob dies, move to next and add coins
         if (hp.value === 0 && currentMobIndex.value < mobQueue.length - 1) {
-          currentMobIndex.value++
-          count.value += mob.value.price
+          handleDeath()
         }
       }
     }
@@ -192,6 +204,14 @@ onMounted(() => {
 onUnmounted(() => {
   if (attackInterval) clearInterval(attackInterval)
 })
+
+function handleDeath() {
+  currentMobIndex.value++
+  count.value += mob.value.price
+  bits.value += mob.value.bits
+  shakeCointer.value = true
+  shakeBits.value = true
+}
 
 // DPS calculation (damage per second)
 const dps = computed(() => {
@@ -256,11 +276,39 @@ function onDropHunter(targetHunterId) {
   animationStore.triggerHunterShake(newHunter.id)
   draggedHunterId.value = null
 }
+
+const handleAnimationEnd = (type) => {
+  if (type === 'coin') {
+    shakeCointer.value = false
+  } else if (type === 'bits') {
+    shakeBits.value = false
+  }
+}
 </script>
 
 <template>
   <div class="h-screen w-screen flex-col">
     <div class="flex w-full h-3/4">
+      <div class="w-2/3 h-full p-1">
+        <div class="flex mb-2">
+          <button
+            class="flex-1 py-1 px-2 rounded-l border border-blue-300 text-xs font-semibold focus:outline-none"
+            :class="topLeftTab == 'gacha' ? 'bg-blue-200 text-blue-900' : 'bg-white text-blue-500'"
+            @click="topLeftTab = 'gacha'"
+          >
+            Gacha
+          </button>
+          <button
+            class="flex-1 py-1 px-2 rounded-r border border-blue-300 text-xs font-semibold focus:outline-none"
+            :class="topLeftTab == 'base' ? 'bg-blue-200 text-blue-900' : 'bg-white text-blue-500'"
+            @click="topLeftTab = 'base'"
+          >
+            XX Base
+          </button>
+        </div>
+        <Base v-if="topLeftTab === 'base'" />
+        <Gacha v-else-if="topLeftTab === 'gacha'" />
+      </div>
       <div
         class="ml-auto border-l w-1/3 h-full min-h-3/4 flex flex-col items-center justify-start relative"
         id="mob-container"
@@ -277,7 +325,12 @@ function onDropHunter(targetHunterId) {
           :damagePopStyle="damagePopStyle"
           :onDamage="increment"
         />
-        <CoinCounter :count="count" />
+        <CoinCounter
+          :count="count"
+          :shake="shakeCointer"
+          @animation-end="handleAnimationEnd('coin')"
+        />
+        <BitsCounter :count="bits" :shake="shakeBits" @animation-end="handleAnimationEnd('bits')" />
       </div>
     </div>
 

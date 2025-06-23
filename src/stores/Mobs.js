@@ -11,6 +11,7 @@ export const useMobsStore = defineStore('mobs', () => {
       hp: 10,
       maxHp: 10,
       price: 1,
+      bits: 1,
       description: 'a weak, bouncy blob of goon. ',
       borderColor: '#22c55e', // lime-500
       damagedImg: '/green-slime/green-slime-damaged.png',
