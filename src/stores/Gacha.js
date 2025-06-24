@@ -12,12 +12,12 @@ const BlankBanner = {
     { name: 'Dandy', rarity: 'Normal' },
     { name: 'Cheese', rarity: 'Extra' },
   ],
-  baseTicketPrice: 1,
+  baseTicketPrice: 0,
   costIncreasePerRoll: 0.25,
   luckIncreasePerNormalRoll: 0.01,
-  currentPrice: 1,
+  currentPrice: 0,
   currentLuck: 0,
-  currentPriceFloat: 1.0,
+  currentPriceFloat: 0,
 }
 
 const banners = { Blank: BlankBanner }

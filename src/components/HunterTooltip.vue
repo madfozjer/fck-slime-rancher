@@ -17,28 +17,25 @@ const hunterRarityClasses = {
 const rarityClass = computed(() => {
   return hunterRarityClasses[props.hunter?.rarity] || 'text-gray-600'
 })
-
 const tooltipClass = computed(() => {
-  // Position tooltip to the left (default) or right
   return [
-    'absolute',
-    props.position === 'right' ? 'left-full ml-4' : 'right-full mr-4',
-    'top-1/2',
-    '-translate-y-1/2',
+    'fixed',
     'bg-white',
-    'bg-opacity-90',
+    'bg-opacity-95',
+    'border',
+    'border-blue-400',
     'rounded',
     'shadow-lg',
     'px-5',
     'py-4',
     'text-sm',
     'z-[9999]',
-    'pointer-events-none',
-    'transition-opacity',
-    'duration-200',
-    'overflow-hidden',
+    'pointer-events-none', // Purely visual, won't block clicks (change to 'pointer-events-auto' if interactive)
+    props.position === 'left' ? '-translate-x-1/2' : 'translate-x-1/2',
   ].join(' ')
 })
+
+console.log(tooltipClass.value)
 </script>
 
 <template>
@@ -82,9 +79,3 @@ const tooltipClass = computed(() => {
     </div>
   </div>
 </template>
-
-<style scoped>
-:deep(.z-\[9999\]) {
-  z-index: 9999 !important;
-}
-</style>

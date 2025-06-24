@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Height Test</title>
+    <style>
+      html,
+      body {
+        height: 100vh !important; /* Force full viewport height */
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden !important; /* To prevent scrollbars */
+        background-color: lightblue !important; /* Make it easy to see */
+      }
+      .test-div {
+        height: 100%; /* Should take 100% of body's height */
+        background-color: coral; /* Make it easy to see */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 3em;
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="test-div">This should fill the entire screen!</div>
+  </body>
+</html>

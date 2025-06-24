@@ -287,9 +287,9 @@ const handleAnimationEnd = (type) => {
 </script>
 
 <template>
-  <div class="h-screen w-screen flex-col overflow-hidden" id="app">
-    <div class="flex w-full h-3/4">
-      <div class="w-2/3 h-full p-1">
+  <div id="app" class="h-screen w-screen flex flex-col overflow-hidden">
+    <div class="flex flex-col md:flex-row w-full flex-grow-[3] border border-green-500">
+      <div class="w-full md:w-2/3 p-1">
         <div class="flex mb-2">
           <button
             class="flex-1 py-1 px-2 rounded-l border border-blue-300 text-xs font-semibold focus:outline-none"
@@ -309,8 +309,9 @@ const handleAnimationEnd = (type) => {
         <Base v-if="topLeftTab === 'base'" />
         <Gacha v-else-if="topLeftTab === 'gacha'" />
       </div>
+
       <div
-        class="ml-auto border-l w-1/3 h-full min-h-3/4 flex flex-col items-center justify-start relative"
+        class="w-full md:w-1/3 border-t md:border-t-0 md:border-l h-full flex flex-col items-center justify-start relative"
         id="mob-container"
       >
         <MobDisplay
@@ -338,12 +339,12 @@ const handleAnimationEnd = (type) => {
       </div>
     </div>
 
-    <div class="flex h-1/4">
-      <div class="w-2/3 h-full">
+    <div class="flex flex-col md:flex-row w-full flex-grow-[1] border border-red-500">
+      <div class="w-full md:w-2/3 h-full">
         <Inventory @drag-weapon="onDragWeapon" @drag-hunter="onDragHunter" />
       </div>
-      <div class="flex flex-col ml-auto w-1/3 border">
-        <!-- DPS display above hunters -->
+
+      <div class="w-full md:w-1/3 flex flex-col border-t md:border-t-0 md:border-l h-full">
         <div class="w-full flex justify-center items-center mt-2 mb-1 hover:cursor-pointer">
           <div
             class="relative group text-lg font-bold text-blue-700 bg-blue-100 rounded px-4 py-1 shadow"
@@ -352,7 +353,7 @@ const handleAnimationEnd = (type) => {
           >
             <div
               v-if="dpsTooltip"
-              class="absolute left-1/2 bottom-full mb-2 -translate-x-1/2 bg-white bg-opacity-95 border border-blue-400 rounded shadow px-6 py-5 text-base z-30 w-[400px] pointer-events-none transition-opacity duration-200 text-gray-900"
+              class="absolute left-1/2 bottom-full mb-2 -translate-x-1/2 bg-white bg-opacity-95 border border-blue-400 rounded shadow px-6 py-5 text-base z-30 w-80 sm:w-[400px] pointer-events-none transition-opacity duration-200 text-gray-900"
             >
               <div class="mb-2 font-semibold text-blue-700 text-lg">DPS Breakdown</div>
               <div v-for="h in hunters" :key="h.id" class="mb-2">
@@ -373,13 +374,13 @@ const handleAnimationEnd = (type) => {
                 <span v-if="h.weapon" class="block mt-1 text-gray-700 ml-2">
                   <span class="font-semibold">Total:</span>
                   <span class="text-blue-800">((</span
-                  ><span class="text-red-700">{{ h.weapon.physDamage }}</span>
-                  <span class="text-blue-800">×</span>
-                  <span class="text-green-700">{{ h.modifier?.phys ?? 1 }}</span
+                  ><span class="text-red-700">{{ h.weapon.physDamage }}</span
+                  ><span class="text-blue-800">×</span
+                  ><span class="text-green-700">{{ h.modifier?.phys ?? 1 }}</span
                   ><span class="text-blue-800">)</span> <span class="text-blue-800">+</span>
-                  <span class="text-purple-700">{{ h.weapon.psiDamage }}</span>
-                  <span class="text-blue-800">×</span>
-                  <span class="text-green-700">{{ h.modifier?.psi ?? 1 }}</span
+                  <span class="text-purple-700">{{ h.weapon.psiDamage }}</span
+                  ><span class="text-blue-800">×</span
+                  ><span class="text-green-700">{{ h.modifier?.psi ?? 1 }}</span
                   ><span class="text-blue-800">)) ×</span>
                   <span class="text-pink-700">{{ h.speed }}</span>
                   <span class="text-blue-800">=</span>
@@ -402,11 +403,9 @@ const handleAnimationEnd = (type) => {
             >
           </div>
         </div>
-        <!-- Hunters section with circular background -->
-        <div class="flex p-4 -mt-8" id="hunters">
+        <div class="flex p-4" id="hunters">
           <HuntersRow :hunters="hunters" @drop-weapon="onDropWeapon" @drop-hunter="onDropHunter" />
         </div>
-        <!-- Inventory section -->
       </div>
     </div>
   </div>

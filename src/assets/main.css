@@ -1,9 +1,9 @@
 @import 'tailwindcss';
 html,
-body {
-  height: 100%; /* Make them take up the full viewport height */
-  margin: 0; /* Remove default browser margins */
-  padding: 0; /* Remove default browser padding */
-  overflow-x: hidden; /* if you don't want horizontal scroll */
-  overflow-y: hidden; /* if you don't want vertical scroll */
+body,
+#app {
+  height: 100vh !important; /* Added !important */
+  margin: 0 !important; /* Add !important to margins too, just in case */
+  padding: 0 !important; /* Add !important to paddings too */
+  overflow: hidden !important; /* Prevent scrolling */
 }
