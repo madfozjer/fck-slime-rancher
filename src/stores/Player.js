@@ -5,5 +5,37 @@ export const usePlayerStore = defineStore('player', {
     coins: 0,
     bits: 0,
   }),
-  actions: {},
+  actions: {
+    decrementCoins() {
+      if (this.coins > 0) {
+        this.coins -= 1
+        return true
+      }
+      console.warn('Not enough coins to decrement.')
+      return false
+    },
+    decrementBits() {
+      if (this.bits > 0) {
+        this.bits -= 1
+        return true
+      }
+      console.warn('Not enough bits to decrement.')
+      return false
+    },
+    getCoins() {
+      return this.coins
+    },
+    getBits() {
+      return this.bits
+    },
+    addCoins(amount) {
+      this.coins += amount
+    },
+    addBits(amount) {
+      this.bits += amount
+    },
+    checkStore() {
+      return 'Hello world from Player Store!'
+    },
+  },
 })

@@ -32,9 +32,6 @@ const mobQueue = mobsStore.generateMobQueue(12)
 const currentMobIndex = ref(0)
 // The current mob object (copied from mobQueue)
 const mob = ref({ ...mobQueue[currentMobIndex.value] })
-// The player's coin count
-const count = ref(playerStore.coins)
-const bits = ref(playerStore.bits)
 // The current mob's HP
 const hp = ref(mob.value.hp)
 
@@ -129,7 +126,7 @@ function increment() {
     shakeCointer.value = true
     hp.value = Math.max(0, Math.round(hp.value * 100) / 100) // Round to 2 decimal place
     if (Math.random() > 0.95) {
-      count.value += mob.value.price
+      playerStore.coins += mob.value.price
     }
     // If mob dies, move to next and add coins
     if (hp.value === 0 && currentMobIndex.value < mobQueue.length - 1) {
@@ -210,8 +207,8 @@ onUnmounted(() => {
 
 function handleDeath() {
   currentMobIndex.value++
-  count.value += mob.value.price
-  bits.value += mob.value.bits
+  playerStore.coins += mob.value.price
+  playerStore.bits += mob.value.bits
   shakeCointer.value = true
   shakeBits.value = true
 }
@@ -329,11 +326,15 @@ const handleAnimationEnd = (type) => {
           :onDamage="increment"
         />
         <CoinCounter
-          :count="count"
+          :count="playerStore.coins"
           :shake="shakeCointer"
           @animation-end="handleAnimationEnd('coin')"
         />
-        <BitsCounter :count="bits" :shake="shakeBits" @animation-end="handleAnimationEnd('bits')" />
+        <BitsCounter
+          :count="playerStore.bits"
+          :shake="shakeBits"
+          @animation-end="handleAnimationEnd('bits')"
+        />
       </div>
     </div>
 
