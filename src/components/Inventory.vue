@@ -36,7 +36,9 @@ const showWeaponTooltip = ref(null)
 
     <div class="flex-1 overflow-y-scroll" style="min-height: 0px">
       <div v-if="inventoryTab === 'hunters'">
-        <div class="text-xs text-blue-900 mb-1">Hunters: {{ inventoryStore.hunters.length }}</div>
+        <div class="text-xs text-blue-900 mb-1">
+          Hunters: {{ inventoryStore.hunters.length + inventoryStore.activeHunters }}
+        </div>
         <div
           v-if="inventoryStore.hunters.length === 0"
           class="text-xs text-gray-400 text-center py-4"
@@ -48,7 +50,7 @@ const showWeaponTooltip = ref(null)
             v-for="h in inventoryStore.hunters"
             :key="h.id"
             class="flex flex-col items-center p-1 border rounded bg-white/80 cursor-grab relative group"
-            draggable="true"
+            :draggable="h.id ? true : false"
             @dragstart="$emit('drag-hunter', h.id)"
             @mouseenter="showHunterTooltip = h.id"
             @mouseleave="showHunterTooltip = null"
@@ -65,7 +67,9 @@ const showWeaponTooltip = ref(null)
         </div>
       </div>
       <div v-else>
-        <div class="text-xs text-blue-900 mb-1">Weapons: {{ inventoryStore.weapons.length }}</div>
+        <div class="text-xs text-blue-900 mb-1">
+          Weapons: {{ inventoryStore.weapons.length + inventoryStore.activeWeapons }}
+        </div>
         <div
           v-if="inventoryStore.weapons.length === 0"
           class="text-xs text-gray-400 text-center py-4"
@@ -77,7 +81,7 @@ const showWeaponTooltip = ref(null)
             v-for="w in inventoryStore.weapons"
             :key="w.id"
             class="flex flex-col items-center p-1 border rounded bg-white/80 cursor-grab relative group"
-            draggable="true"
+            :draggable="w.id ? true : false"
             @dragstart="$emit('drag-weapon', w.id)"
             @mouseenter="showWeaponTooltip = w.id"
             @mouseleave="showWeaponTooltip = null"

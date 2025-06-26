@@ -3,14 +3,16 @@ import { defineStore } from 'pinia'
 import { useHuntersStore } from './Hunters.js'
 import { usePlayerStore } from './Player.js'
 import { useInventoryStore } from './Inventory'
+import { useWeaponsStore } from './Weapons.js'
 
 const BlankBanner = {
   name: 'exterminate (all) blankies',
   img: '',
   content: [
-    { name: 'Jacob', rarity: 'Normal' },
-    { name: 'Dandy', rarity: 'Normal' },
-    { name: 'Cheese', rarity: 'Extra' },
+    { name: 'Jacob', rarity: 'Normal', type: 'Hunter' },
+    { name: 'Dandy', rarity: 'Normal', type: 'Hunter' },
+    { name: 'Cheese', rarity: 'Extra', type: 'Hunter' },
+    { name: 'Wooden Sword', rarity: 'Normal', type: 'Weapon' },
   ],
   baseTicketPrice: 0,
   costIncreasePerRoll: 0.25,
@@ -28,6 +30,7 @@ export const useGachaStore = defineStore('gacha', {
     HunterStore: useHuntersStore(),
     PlayerStore: usePlayerStore(),
     InventoryStore: useInventoryStore(),
+    WeaponStore: useWeaponsStore(),
   }),
   actions: {
     rollGacha(banner) {
@@ -46,31 +49,44 @@ export const useGachaStore = defineStore('gacha', {
           rarity = 'Extra'
         }
 
-        const hunter = banners[banner].content.find((h) => h.rarity === rarity)
-        if (!hunter) {
+        const itemsOfRarity = banners[banner].content.filter((item) => item.rarity === rarity)
+
+        if (itemsOfRarity.length > 0) {
+          const randomIndex = Math.floor(Math.random() * itemsOfRarity.length)
+
+          const drop = itemsOfRarity[randomIndex]
+
+          banners[banner].currentPriceFloat +=
+            banners[banner].currentPrice * banners[banner].costIncreasePerRoll
+
+          banners[banner].currentPrice = Math.floor(banners[banner].currentPriceFloat)
+
+          console.log(`luck state: ${banners[banner].currentLuck}`)
+          console.log(`chance for extra hunter: ${0.1 + banners[banner].currentLuck}`)
+
+          if (rarity === 'Extra') {
+            banners[banner].currentLuck = 0
+          }
+
+          if (drop.type == 'Hunter') {
+            // Add the hunter to the player's collection
+            this.InventoryStore.addHunter(drop.name)
+
+            // Return the rolled hunter
+            return this.HunterStore.getHunterByName(drop.name)
+          } else if (drop.type == 'Weapon') {
+            // Add the weapon to the player's collection
+            this.InventoryStore.addWeapon(drop.name)
+
+            // Return the rolled weapon
+            return this.WeaponStore.getWeaponByName(drop.name)
+          }
+        } else {
           console.error(`No hunter found for rarity: ${rarity} in banner: ${banner}`)
           return null
         }
-
-        // Reset luck if a normal hunter is rolled
-        if (rarity === 'Extra') {
-          banners[banner].currentLuck = 0
-        }
-
-        // Add the hunter to the player's collection
-        this.InventoryStore.addHunter(hunter.name)
-        banners[banner].currentPriceFloat +=
-          banners[banner].currentPrice * banners[banner].costIncreasePerRoll
-
-        banners[banner].currentPrice = Math.floor(banners[banner].currentPriceFloat)
-
-        console.log(`luck state: ${banners[banner].currentLuck}`)
-        console.log(`chance for extra hunter: ${0.1 + banners[banner].currentLuck}`)
-
-        // Return the rolled hunter
-        return this.HunterStore.getHunterByName(hunter.name)
       } else {
-        console.warn('Not enough bits to roll the gacha.')
+        alert(`Not enough bits to roll the gacha, you have only ${this.PlayerStore.getBits()} bits`)
         return null
       }
     },

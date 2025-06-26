@@ -20,11 +20,14 @@ const animationStore = useAnimationStore()
 const isShaking = ref(false)
 const isAttacking = ref(false)
 const isTooltipVisible = ref(false)
+const isExist = ref(true)
+
+if (props.id == undefined) isExist.value = false
 
 watch(
   () => animationStore.hunterShakes[props.id],
   (val, oldVal) => {
-    if (val && !oldVal) {
+    if (val && !oldVal && isExist) {
       isShaking.value = false
       isAttacking.value = true
       void document.body.offsetWidth // force reflow
@@ -41,7 +44,7 @@ watch(
 
 <template>
   <div
-    class="w-fit h-fit flex items-center justify-center bg-transparent relative"
+    class="w-fit h-fit flex items-center justify-center bg-transparent relative hover:cursor-help"
     @mouseenter="isTooltipVisible = true"
     @mouseleave="isTooltipVisible = false"
     @dragover.prevent
@@ -59,9 +62,11 @@ watch(
     <!-- Hunter image -->
     <img
       :src="
-        isAttacking
-          ? `/hunters/${props.name}/${props.name}-attack.png`
-          : props.img || `/hunters/${props.name}/${props.name}.png`
+        isExist
+          ? isAttacking
+            ? `/hunters/${props.name}/${props.name}-attack.png`
+            : props.img || `/hunters/${props.name}/${props.name}.png`
+          : ''
       "
       :alt="props.name"
       width="128"
@@ -70,7 +75,7 @@ watch(
       :class="isShaking ? 'animate-hunter-shake' : ''"
     />
     <!-- Info tooltip -->
-    <HunterTooltip v-if="isTooltipVisible" :hunter="props" position="left" />
+    <HunterTooltip v-if="isTooltipVisible && isExist" :hunter="props" position="left" />
   </div>
 </template>
 

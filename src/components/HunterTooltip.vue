@@ -17,6 +17,7 @@ const hunterRarityClasses = {
 const rarityClass = computed(() => {
   return hunterRarityClasses[props.hunter?.rarity] || 'text-gray-600'
 })
+
 const tooltipClass = computed(() => {
   return [
     'fixed',
@@ -30,12 +31,12 @@ const tooltipClass = computed(() => {
     'py-4',
     'text-sm',
     'z-[9999]',
+    '-translate-y-9/10',
+    'top-7/10',
     'pointer-events-none', // Purely visual, won't block clicks (change to 'pointer-events-auto' if interactive)
     props.position === 'left' ? '-translate-x-1/2' : 'translate-x-1/2',
   ].join(' ')
 })
-
-console.log(tooltipClass.value)
 </script>
 
 <template>

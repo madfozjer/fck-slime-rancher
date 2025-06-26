@@ -11,22 +11,21 @@ const props = defineProps({
 
 const tooltipClass = computed(() => {
   return [
-    'absolute',
-    props.position === 'right' ? 'left-full ml-4' : 'right-full mr-4',
-    'top-1/2',
-    '-translate-y-1/2',
+    'fixed',
     'bg-white',
-    'bg-opacity-90',
+    'bg-opacity-95',
+    'border',
+    'border-blue-400',
     'rounded',
     'shadow-lg',
     'px-5',
     'py-4',
     'text-sm',
-    'z-[9999]', // use a very high z-index for tooltips
-    'pointer-events-none',
-    'transition-opacity',
-    'duration-200',
-    'overflow-hidden',
+    'z-[9999]',
+    '-translate-y-9/10',
+    'top-7/10',
+    'pointer-events-none', // Purely visual, won't block clicks (change to 'pointer-events-auto' if interactive)
+    props.position === 'left' ? '-translate-x-1/2' : 'translate-x-1/2',
   ].join(' ')
 })
 </script>

@@ -142,30 +142,17 @@ const showDamagedImg = ref(false)
 const huntersStore = useHuntersStore()
 const weaponsStore = useWeaponsStore()
 const inventoryStore = useInventoryStore()
+inventoryStore.initializeInventory()
 
 // Use hunters from the store as a reactive array
-const hunters = ref([
-  {
-    ...huntersStore.getHunterByName('Jacob'),
-    weapon: weaponsStore.getWeaponById(1),
-    id: 1,
-  },
-  {
-    ...huntersStore.getHunterByName('Jacob'),
-    weapon: weaponsStore.getWeaponById(2),
-    id: 2,
-  },
-  {
-    ...huntersStore.getHunterByName('Dandy'),
-    weapon: weaponsStore.getWeaponById(1),
-    id: 3,
-  },
-  {
-    ...huntersStore.getHunterByName('Dandy'),
-    weapon: weaponsStore.getWeaponById(2),
-    id: 4,
-  },
-])
+const hunters = ref([])
+
+if (hunters.value.length <= 0) {
+  hunters.value.push(huntersStore.getHunterById(2))
+  hunters.value[0].weapon = weaponsStore.getWeaponById(2)
+  inventoryStore.activeHunters++
+  inventoryStore.activeWeapons += 2
+}
 
 // Calculate the average attack interval based on all hunters' speed
 const avgAttackInterval = computed(() => {
@@ -177,7 +164,6 @@ const avgAttackInterval = computed(() => {
 let attackInterval = null
 
 onMounted(() => {
-  inventoryStore.initializeInventory()
   attackInterval = setInterval(() => {
     if (hp.value > 0) {
       // Trigger shake for all hunters via animation store
@@ -238,7 +224,7 @@ function onDragWeapon(weaponId) {
 }
 
 function onDragHunter(hunterId) {
-  draggedHunterId.value = hunterId
+  if (hunterId) draggedHunterId.value = hunterId
 }
 
 function onDropWeapon(hunterId) {
@@ -271,10 +257,11 @@ function onDropHunter(targetHunterId) {
   newHunter.weapon = oldWeapon
   // Put the old hunter (with NO weapon) back to inventory
   const oldHunter = { ...hunters.value[idxTarget], weapon: null }
-  inventoryStore.hunters.push(oldHunter)
+  if (oldHunter.id) inventoryStore.hunters.push(oldHunter)
   hunters.value[idxTarget] = newHunter
   animationStore.triggerHunterShake(newHunter.id)
   draggedHunterId.value = null
+  inventoryStore.activeHunters++
 }
 
 const handleAnimationEnd = (type) => {
@@ -288,7 +275,7 @@ const handleAnimationEnd = (type) => {
 
 <template>
   <div id="app" class="h-screen w-screen flex flex-col overflow-hidden">
-    <div class="flex flex-col md:flex-row w-full flex-grow-[3] border border-green-500">
+    <div class="flex flex-col md:flex-row w-full flex-grow-[3]">
       <div class="w-full md:w-2/3 p-1">
         <div class="flex mb-2">
           <button
@@ -339,7 +326,7 @@ const handleAnimationEnd = (type) => {
       </div>
     </div>
 
-    <div class="flex flex-col md:flex-row w-full flex-grow-[1] border border-red-500">
+    <div class="flex flex-col md:flex-row w-full h-1/3">
       <div class="w-full md:w-2/3 h-full">
         <Inventory @drag-weapon="onDragWeapon" @drag-hunter="onDragHunter" />
       </div>
@@ -352,46 +339,48 @@ const handleAnimationEnd = (type) => {
             @mouseleave="dpsTooltip = false"
           >
             <div
-              v-if="dpsTooltip"
+              v-if="dpsTooltip && dps > 0.0"
               class="absolute left-1/2 bottom-full mb-2 -translate-x-1/2 bg-white bg-opacity-95 border border-blue-400 rounded shadow px-6 py-5 text-base z-30 w-80 sm:w-[400px] pointer-events-none transition-opacity duration-200 text-gray-900"
             >
               <div class="mb-2 font-semibold text-blue-700 text-lg">DPS Breakdown</div>
               <div v-for="h in hunters" :key="h.id" class="mb-2">
-                <span class="font-bold text-blue-900">{{ h.name }}</span>
-                <span v-if="h.weapon" class="text-blue-700"> ({{ h.weapon.name }})</span>:
-                <span class="text-pink-700"
-                  >Speed: <span class="font-mono">{{ h.speed }}</span></span
-                >,
-                <span v-if="h.weapon" class="text-red-700"
-                  >Phys: <span class="font-mono">{{ h.weapon.physDamage }}</span></span
-                >,
-                <span v-if="h.weapon" class="text-purple-700"
-                  >Psi: <span class="font-mono">{{ h.weapon.psiDamage }}</span></span
-                >
-                <span v-if="h.modifier" class="text-green-700">
-                  | Mod: Phys x{{ h.modifier.phys }}, Psi x{{ h.modifier.psi }}
-                </span>
-                <span v-if="h.weapon" class="block mt-1 text-gray-700 ml-2">
-                  <span class="font-semibold">Total:</span>
-                  <span class="text-blue-800">((</span
-                  ><span class="text-red-700">{{ h.weapon.physDamage }}</span
-                  ><span class="text-blue-800">×</span
-                  ><span class="text-green-700">{{ h.modifier?.phys ?? 1 }}</span
-                  ><span class="text-blue-800">)</span> <span class="text-blue-800">+</span>
-                  <span class="text-purple-700">{{ h.weapon.psiDamage }}</span
-                  ><span class="text-blue-800">×</span
-                  ><span class="text-green-700">{{ h.modifier?.psi ?? 1 }}</span
-                  ><span class="text-blue-800">)) ×</span>
-                  <span class="text-pink-700">{{ h.speed }}</span>
-                  <span class="text-blue-800">=</span>
-                  <span class="font-mono text-orange-600">{{
-                    (
-                      ((h.weapon.physDamage || 0) * (h.modifier?.phys ?? 1) +
-                        (h.weapon.psiDamage || 0) * (h.modifier?.psi ?? 1)) *
-                      (h.speed || 1)
-                    ).toFixed(3)
-                  }}</span>
-                </span>
+                <div v-if="h.id">
+                  <span class="font-bold text-blue-900">{{ h.name }}</span>
+                  <span v-if="h.weapon" class="text-blue-700"> ({{ h.weapon.name }})</span>:
+                  <span class="text-pink-700"
+                    >Speed: <span class="font-mono">{{ h.speed }}</span></span
+                  >,
+                  <span v-if="h.weapon" class="text-red-700"
+                    >Phys: <span class="font-mono">{{ h.weapon.physDamage }}</span></span
+                  >,
+                  <span v-if="h.weapon" class="text-purple-700"
+                    >Psi: <span class="font-mono">{{ h.weapon.psiDamage }}</span></span
+                  >
+                  <span v-if="h.modifier" class="text-green-700">
+                    | Mod: Phys x{{ h.modifier.phys }}, Psi x{{ h.modifier.psi }}
+                  </span>
+                  <span v-if="h.weapon" class="block mt-1 text-gray-700 ml-2">
+                    <span class="font-semibold">Total:</span>
+                    <span class="text-blue-800">((</span
+                    ><span class="text-red-700">{{ h.weapon.physDamage }}</span
+                    ><span class="text-blue-800">×</span
+                    ><span class="text-green-700">{{ h.modifier?.phys ?? 1 }}</span
+                    ><span class="text-blue-800">)</span> <span class="text-blue-800">+</span>
+                    <span class="text-purple-700">{{ h.weapon.psiDamage }}</span
+                    ><span class="text-blue-800">×</span
+                    ><span class="text-green-700">{{ h.modifier?.psi ?? 1 }}</span
+                    ><span class="text-blue-800">)) ×</span>
+                    <span class="text-pink-700">{{ h.speed }}</span>
+                    <span class="text-blue-800">=</span>
+                    <span class="font-mono text-orange-600">{{
+                      (
+                        ((h.weapon.physDamage || 0) * (h.modifier?.phys ?? 1) +
+                          (h.weapon.psiDamage || 0) * (h.modifier?.psi ?? 1)) *
+                        (h.speed || 1)
+                      ).toFixed(3)
+                    }}</span>
+                  </span>
+                </div>
               </div>
               <div class="mt-4 pt-2 border-t border-blue-200 text-lg font-bold text-center">
                 Final Total: <span class="text-orange-600">{{ dps }}</span>
@@ -403,7 +392,7 @@ const handleAnimationEnd = (type) => {
             >
           </div>
         </div>
-        <div class="flex p-4" id="hunters">
+        <div class="flex p-4" id="hunters" v-if="hunters">
           <HuntersRow :hunters="hunters" @drop-weapon="onDropWeapon" @drop-hunter="onDropHunter" />
         </div>
       </div>

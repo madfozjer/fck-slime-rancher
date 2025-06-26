@@ -5,6 +5,12 @@ const animationStore = useAnimationStore()
 const props = defineProps({
   hunters: Array,
 })
+
+for (let i = props.hunters.length; i < 4; i++) {
+  if (props.hunters[i] == undefined) {
+    props.hunters[i] = {}
+  }
+}
 </script>
 
 <template>

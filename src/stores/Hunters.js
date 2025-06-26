@@ -53,5 +53,8 @@ export const useHuntersStore = defineStore('hunters', {
     getHunterByName(name) {
       return this.hunters.find((hunter) => hunter.name === name)
     },
+    getHunterById(id) {
+      return this.hunters.find((hunter) => hunter.id === id)
+    },
   },
 })

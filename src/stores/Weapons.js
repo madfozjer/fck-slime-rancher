@@ -6,6 +6,7 @@ export const useWeaponsStore = defineStore('weapons', {
       {
         id: 1,
         name: 'Wooden Sword',
+        rarity: 'Normal',
         physDamage: 1,
         psiDamage: 0,
         description: 'A simple wooden sword. Deals physical damage.',
@@ -13,6 +14,7 @@ export const useWeaponsStore = defineStore('weapons', {
       {
         id: 2,
         name: 'Mind Wand',
+        rarity: 'Normal',
         physDamage: 0,
         psiDamage: 1,
         description: 'A basic wand that channels psychic energy.',
