@@ -151,7 +151,7 @@ if (hunters.value.length <= 0) {
   hunters.value.push(huntersStore.getHunterById(2))
   hunters.value[0].weapon = weaponsStore.getWeaponById(2)
   inventoryStore.activeHunters++
-  inventoryStore.activeWeapons += 2
+  inventoryStore.activeWeapons++
 }
 
 // Calculate the average attack interval based on all hunters' speed
@@ -236,7 +236,12 @@ function onDropWeapon(hunterId) {
   // Swap the hunter's weapon with the inventory weapon
   const oldWeapon = hunter.weapon
   hunter.weapon = inventoryStore.weapons[weaponIdx]
-  inventoryStore.weapons[weaponIdx] = oldWeapon
+
+  if (oldWeapon) inventoryStore.weapons[weaponIdx] = oldWeapon
+  else {
+    inventoryStore.weapons.splice(weaponIdx, 1)
+  }
+
   // Trigger shake animation for this hunter
   animationStore.triggerHunterShake(hunter.id)
   draggedWeaponId.value = null
@@ -262,6 +267,39 @@ function onDropHunter(targetHunterId) {
   animationStore.triggerHunterShake(newHunter.id)
   draggedHunterId.value = null
   inventoryStore.activeHunters++
+}
+
+function onUnequipHunter(hunterId) {
+  if (hunterId == null) return
+  // Find the hunter
+  const hunter = hunters.value.find((h) => h.id === hunterId)
+  if (!hunter) return
+
+  // Delete weapon from hunter's hand
+  if (hunter.weapon != undefined) inventoryStore.addWeapon(hunter.weapon.name)
+  hunter.weapon = undefined
+
+  // Trigger shake animation for this hunter
+  animationStore.triggerHunterShake(hunter.id)
+  inventoryStore.activeWeapons--
+}
+
+function onPullHunter(hunterId, hunterSlot) {
+  // Find activated hunter
+  const hunter = hunters.value.find((h) => h.id === hunterId)
+  if (!hunter) return
+  // Retrieve weapon from hunter
+  if (hunter.weapon != undefined) inventoryStore.addWeapon(hunter.weapon.name)
+  hunter.weapon = undefined
+  inventoryStore.activeWeapons--
+
+  // Put the old hunter (with NO weapon) back to inventory
+  inventoryStore.hunters.push(hunter)
+  hunters.value.splice(hunterSlot, 1)
+
+  hunters.value.push({})
+  console.log(hunters.value)
+  inventoryStore.activeHunters--
 }
 
 const handleAnimationEnd = (type) => {
@@ -393,7 +431,13 @@ const handleAnimationEnd = (type) => {
           </div>
         </div>
         <div class="flex p-4" id="hunters" v-if="hunters">
-          <HuntersRow :hunters="hunters" @drop-weapon="onDropWeapon" @drop-hunter="onDropHunter" />
+          <HuntersRow
+            :hunters="hunters"
+            @drop-weapon="onDropWeapon"
+            @drop-hunter="onDropHunter"
+            @unequip="onUnequipHunter"
+            @pull-hunter="onPullHunter"
+          />
         </div>
       </div>
     </div>

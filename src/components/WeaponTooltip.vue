@@ -44,6 +44,7 @@ const tooltipClass = computed(() => {
   >
     <div class="font-bold mb-2 flex items-center gap-2">
       {{ weapon.name }}
+      <span class="italic font-mono font-normal text-sm text-gray-700">(#{{ weapon.id }})</span>
     </div>
     <div class="mb-1">
       <span class="font-semibold"> Phys: </span>

@@ -1,5 +1,5 @@
 <script setup>
-import { defineProps, ref, watch } from 'vue'
+import { defineProps, ref, watch, onBeforeUnmount } from 'vue' // Add onBeforeUnmount here
 import { useAnimationStore } from '@/stores/Animation.js'
 import HunterTooltip from '@/components/HunterTooltip.vue'
 
@@ -16,13 +16,56 @@ const props = defineProps({
   // Add more hunter stats as needed
 })
 
+const emit = defineEmits(['drop-weapon', 'single-click', 'double-click', 'unequip'])
+
+// Add these lines below isExist
+const clickTimer = ref(null)
+const clickCount = ref(0)
+const doubleClickThreshold = 300
+
 const animationStore = useAnimationStore()
 const isShaking = ref(false)
 const isAttacking = ref(false)
 const isTooltipVisible = ref(false)
+
 const isExist = ref(true)
 
 if (props.id == undefined) isExist.value = false
+
+// Add these functions below the isExist check
+function handleMainClick() {
+  if (!isExist.value) {
+    return
+  }
+
+  clickCount.value++
+
+  if (clickCount.value === 1) {
+    clickTimer.value = setTimeout(() => {
+      emit('single-click', props.id)
+      emit('drop-weapon', props.id)
+      resetClickState()
+    }, doubleClickThreshold)
+  } else if (clickCount.value === 2) {
+    clearTimeout(clickTimer.value)
+    emit('double-click', props.id)
+    resetClickState()
+  } else {
+    resetClickState()
+  }
+}
+
+function resetClickState() {
+  clickCount.value = 0
+  clickTimer.value = null
+}
+
+// Add this onBeforeUnmount hook
+onBeforeUnmount(() => {
+  if (clickTimer.value) {
+    clearTimeout(clickTimer.value)
+  }
+})
 
 watch(
   () => animationStore.hunterShakes[props.id],
@@ -48,7 +91,8 @@ watch(
     @mouseenter="isTooltipVisible = true"
     @mouseleave="isTooltipVisible = false"
     @dragover.prevent
-    @drop="$emit('drop-weapon', props.id)"
+    @click="handleMainClick"
+    @rightclick="$emit('unequip', w.id)"
   >
     <!-- Circle background: bigger than cat, 50% transparent, with shadow -->
     <div
@@ -72,7 +116,7 @@ watch(
       width="128"
       height="128"
       class="relative z-10"
-      :class="isShaking ? 'animate-hunter-shake' : ''"
+      :class="isShaking && isExist ? 'animate-hunter-shake' : ''"
     />
     <!-- Info tooltip -->
     <HunterTooltip v-if="isTooltipVisible && isExist" :hunter="props" position="left" />

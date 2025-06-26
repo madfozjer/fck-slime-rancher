@@ -80,9 +80,9 @@ const showWeaponTooltip = ref(null)
           <div
             v-for="w in inventoryStore.weapons"
             :key="w.id"
-            class="flex flex-col items-center p-1 border rounded bg-white/80 cursor-grab relative group"
+            class="flex flex-col items-center p-1 border rounded bg-white/80 relative group hover:cursor-pointer"
             :draggable="w.id ? true : false"
-            @dragstart="$emit('drag-weapon', w.id)"
+            @click="$emit('drag-weapon', w.id)"
             @mouseenter="showWeaponTooltip = w.id"
             @mouseleave="showWeaponTooltip = null"
           >

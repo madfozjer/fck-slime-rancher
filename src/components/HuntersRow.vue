@@ -11,6 +11,10 @@ for (let i = props.hunters.length; i < 4; i++) {
     props.hunters[i] = {}
   }
 }
+
+function handleRightClick(e, hunter) {
+  e.preventDefault()
+}
 </script>
 
 <template>
@@ -24,6 +28,8 @@ for (let i = props.hunters.length; i < 4; i++) {
       @drop-weapon="$emit('drop-weapon', hunter.id)"
       @dragover.prevent
       @drop="$emit('drop-hunter', hunter.id)"
+      @contextmenu="($emit('unequip', hunter.id), handleRightClick($event, hunter))"
+      @double-click="$emit('pull-hunter', hunter.id, idx)"
     />
   </div>
 </template>

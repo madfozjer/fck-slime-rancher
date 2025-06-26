@@ -15,6 +15,7 @@ export const useInventoryStore = defineStore('inventory', {
       if (this.hunters.length <= 0 && this.weapons.length <= 0) {
         const weaponsStore = useWeaponsStore()
         this.addHunter('Jacob')
+        this.hunters[0].id = 1
         this.addWeapon('Wooden Sword')
         this.hunters[0].weapon = weaponsStore.getWeaponByName('Mind Wand')
         console.log('Initialized inventory')
@@ -28,7 +29,7 @@ export const useInventoryStore = defineStore('inventory', {
 
         if (hunter) {
           const newHunter = { ...hunter }
-          newHunter.id = 1 + this.hunters.length
+          newHunter.id = 2 + this.hunters.length
           this.hunters.push(newHunter)
           console.log(`Hunter "${newHunter.name}" added to inventory.`)
         } else {
@@ -46,7 +47,7 @@ export const useInventoryStore = defineStore('inventory', {
 
         if (weapon) {
           const newWeaapon = { ...weapon }
-          newWeaapon.id = 1 + this.weapons.length
+          newWeaapon.id = 2 + this.weapons.length
           this.weapons.push(newWeaapon)
           console.log(`Weapon "${newWeaapon.name}" added to inventory.`)
         } else {
