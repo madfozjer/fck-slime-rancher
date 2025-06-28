@@ -41,7 +41,17 @@ watch(currentMobIndex, (idx) => {
   mob.value = { ...mobQueue[idx] }
   hp.value = mob.value.hp
   if (mob.value.boss) startTimer(mob.value.bossTime)
+  if (currentMobIndex.value >= mobQueue.length) dungeonEnd()
 })
+
+function dungeonEnd() {
+  playerStore.coins += 10
+  alert('ГОООООООООООООООЛ')
+}
+
+function killMob() {
+  handleDeath()
+}
 
 // For HP bar animation and shake effect
 const hpBar = ref(null)
@@ -211,8 +221,8 @@ onMounted(() => {
       // Sum all hunters' weapon damage (phys + psi), applying modifiers
       const totalAtk = hunters.value.reduce((sum, h) => {
         const w = h.weapon
-        const mod = h.modifier || { phys: 1, psi: 1 }
-        return sum + (w?.physDamage || 0) * (mod.phys || 1) + (w?.psiDamage || 0) * (mod.psi || 1)
+        const mod = h.modifier || { phys: 0, psi: 0 }
+        return sum + (w?.physDamage || 0) * (mod.phys || 0) + (w?.psiDamage || 0) * (mod.psi || 0)
       }, 0)
       if (totalAtk > 0) {
         hp.value = Math.max(0, Math.round((hp.value - totalAtk) * 100) / 100)
@@ -240,18 +250,32 @@ function handleDeath() {
 
 // DPS calculation (damage per second)
 const dps = computed(() => {
-  // For each hunter, their DPS is ((phys*mod)+(psi*mod)) * speed
-  return hunters.value
-    .reduce((sum, h) => {
-      const w = h.weapon
-      const mod = h.modifier || { phys: 1, psi: 1 }
-      return (
-        sum +
-        ((w?.physDamage || 0) * (mod.phys || 1) + (w?.psiDamage || 0) * (mod.psi || 1)) *
-          (h?.speed || 1)
-      )
-    }, 0)
-    .toFixed(2)
+  const totalDps = hunters.value.reduce((sum, h) => {
+    if (!h || !h.name) {
+      return sum
+    }
+
+    const weapon = h.weapon || { physDamage: 0, psiDamage: 0 }
+    const modifier = h.modifier || { phys: 0, psi: 0 }
+
+    const physDmg = weapon.physDamage || 0
+    const psiDmg = weapon.psiDamage || 0
+    const physMod = modifier.phys || 0
+    const psiMod = modifier.psi || 0
+    const speed = h.speed || 0
+
+    const hunterDps = (physDmg * physMod + psiDmg * psiMod) * speed
+
+    return sum + hunterDps
+  }, 0)
+
+  // Handle cases where totalDps might still be NaN (e.g., if initial hunters.value is weird)
+  // or if all calculations somehow resulted in NaN despite the precautions.
+  if (isNaN(totalDps)) {
+    return '0.000'
+  }
+
+  return totalDps.toFixed(3)
 })
 
 const dpsTooltip = ref(false)
@@ -352,6 +376,7 @@ const handleAnimationEnd = (type) => {
 
 <template>
   <div id="app" class="h-screen w-screen flex flex-col overflow-hidden">
+    <button class="fixed" @click="(killMob(), console.log(`${mob.name} was killed`))">kill</button>
     <div class="flex flex-col md:flex-row w-full flex-grow-[3]">
       <div class="w-full md:w-2/3 p-1">
         <div class="flex mb-2">

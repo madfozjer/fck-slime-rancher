@@ -13,13 +13,14 @@ const BlankBanner = {
     { name: 'Dandy', rarity: 'Normal', type: 'Hunter' },
     { name: 'Cheese', rarity: 'Extra', type: 'Hunter' },
     { name: 'Wooden Sword', rarity: 'Normal', type: 'Weapon' },
+    { name: 'Mind Wand', rarity: 'Normal', type: 'Weapon' },
   ],
-  baseTicketPrice: 1,
+  baseTicketPrice: 0,
   costIncreasePerRoll: 0.25,
   luckIncreasePerNormalRoll: 0.01,
-  currentPrice: 1,
+  currentPrice: 0,
   currentLuck: 0,
-  currentPriceFloat: 1.0,
+  currentPriceFloat: 0.0,
   chances: { Normal: 0.95, Extra: 0.05 },
 }
 
