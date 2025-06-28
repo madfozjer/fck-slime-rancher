@@ -15,6 +15,7 @@ export const useMobsStore = defineStore('mobs', () => {
       description: 'a weak, bouncy blob of goon. ',
       borderColor: '#22c55e', // lime-500
       damagedImg: 'mobs/green-slime/green-slime-damaged.png',
+      boss: false,
     },
     {
       name: 'Cutie Pie',
@@ -27,18 +28,37 @@ export const useMobsStore = defineStore('mobs', () => {
       description: 'hello :3 pwease dont hurtf me ',
       borderColor: '#c9f2fc ',
       damagedImg: `mobs/cutie-pie/cutie-pie-damaged.png`,
+      boss: false,
     },
     // Add more mobs here in the future
   ])
 
+  const bosses = ref([
+    {
+      name: 'Cutie Pie Boss',
+      img: `mobs/cutie-pie/cutie-pie.png`,
+      alt: 'Cutie Pie',
+      hp: 100,
+      maxHp: 100,
+      price: 3,
+      bits: 0,
+      description: 'ima big boy now',
+      borderColor: '#c9f2fc ',
+      damagedImg: `mobs/cutie-pie/cutie-pie-damaged.png`,
+      boss: true,
+      bossTime: 10,
+    },
+  ])
+
   // Generate a mob queue (array of mob objects, shallow copies)
   function generateMobQueue(count = 12) {
-    // For now, only Green Slime
-    return Array.from({ length: count }, () => {
+    const mobQueue = Array.from({ length: count }, () => {
       // Pick a random mob template from the list
       const mobTemplate = mobs.value[Math.floor(Math.random() * mobs.value.length)]
       return { ...mobTemplate }
     })
+    mobQueue.push(bosses.value[Math.floor(Math.random() * bosses.value.length)])
+    return mobQueue
   }
 
   function getMob(name) {

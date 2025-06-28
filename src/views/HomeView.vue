@@ -27,7 +27,7 @@ const mobsStore = useMobsStore()
 const playerStore = usePlayerStore()
 
 // Generate mob queue from store
-const mobQueue = mobsStore.generateMobQueue(12)
+const mobQueue = mobsStore.generateMobQueue(1)
 
 // Track which mob is currently active
 const currentMobIndex = ref(0)
@@ -40,6 +40,7 @@ const hp = ref(mob.value.hp)
 watch(currentMobIndex, (idx) => {
   mob.value = { ...mobQueue[idx] }
   hp.value = mob.value.hp
+  if (mob.value.boss) startTimer(mob.value.bossTime)
 })
 
 // For HP bar animation and shake effect
@@ -164,23 +165,21 @@ const avgAttackInterval = computed(() => {
 
 let attackInterval = null
 
-var timerLength = 120
-var timeLeft = ref(timerLength)
+var timeLeft = ref(0)
 var timerRunning = false
 var timerInterval = null // To store the interval ID
 
-onMounted(() => {
-  startTimer()
-})
+onMounted(() => {})
 
-function startTimer() {
-  if (timerRunning) return
+function startTimer(time) {
+  resetTimer(time)
 
   timerRunning = true
   timerInterval = setInterval(() => {
     if (timeLeft.value > 0) {
       timeLeft.value--
     } else {
+      mob.value = undefined
       stopTimer()
       // Add your "time's up" logic here, e.g., $emit('timer-end');
     }
@@ -193,9 +192,8 @@ function stopTimer() {
   timerInterval = null
 }
 
-function resetTimer() {
-  stopTimer()
-  timeLeft.value = timerLength
+function resetTimer(time) {
+  timeLeft.value = time
 }
 
 // Lifecycle hook to clean up the timer when the component is destroyed
@@ -205,7 +203,7 @@ onUnmounted(() => {
 
 onMounted(() => {
   attackInterval = setInterval(() => {
-    if (hp.value > 0) {
+    if (hp.value > 0 && mob.value) {
       // Trigger shake for all hunters via animation store
       hunters.value.forEach((h) => {
         animationStore.triggerHunterShake(h.id)
@@ -232,6 +230,7 @@ onUnmounted(() => {
 })
 
 function handleDeath() {
+  if (mob.value.boss) stopTimer()
   currentMobIndex.value++
   playerStore.coins += mob.value.price
   playerStore.bits += mob.value.bits
@@ -401,7 +400,7 @@ const handleAnimationEnd = (type) => {
           :shake="shakeBits"
           @animation-end="handleAnimationEnd('bits')"
         />
-        <Timer :timeLeft="timeLeft" class="justify-end items-end" />
+        <Timer :timeLeft="timeLeft" v-if="timerRunning" class="justify-end items-end" />
       </div>
     </div>
 
