@@ -13,6 +13,7 @@ const props = defineProps({
   rarity: String,
   speed: Number,
   modifier: Object,
+  foil: Boolean,
   // Add more hunter stats as needed
 })
 
@@ -102,6 +103,7 @@ watch(
         width: '114px',
         height: '114px',
       }"
+      :class="foil ? 'foil-shimmer-circle' : ''"
     ></div>
     <!-- Hunter image -->
     <img
@@ -146,5 +148,52 @@ watch(
 }
 .animate-hunter-shake {
   animation: hunter-shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+.foil-shimmer-circle {
+  pointer-events: none;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+/* Styles for the shimmering effect using a pseudo-element */
+.foil-shimmer-circle::before {
+  content: '';
+  position: absolute;
+  /* Start the gradient off-center to allow it to move across */
+  top: -50%;
+  left: -50%;
+  width: 200%; /* Make the pseudo-element larger than the circle */
+  height: 200%; /* Make the pseudo-element larger than the circle */
+  background: linear-gradient(
+    120deg,
+    /* Angle of the rainbow gradient */ #ff0000,
+    /* Red */ #ff7f00,
+    /* Orange */ #ffff00,
+    /* Yellow */ #00ff00,
+    /* Green */ #0000ff,
+    /* Blue */ #4b0082,
+    /* Indigo */ #9400d3 /* Violet */
+  );
+  background-size: 200% 200%; /* Ensure the large gradient covers the expanded pseudo-element */
+  /* Changed animation to go back and forth using 'alternate' */
+  animation: foil-sweep 8s linear infinite alternate;
+  opacity: 0.3; /* Adjust the transparency of the foil overlay */
+  filter: blur(3px); /* Softens the gradient lines for a more iridescent glow */
+  transform: rotate(0deg); /* Initial rotation for animation */
+  z-index: -1; /* Ensure it's behind the text if any */
+}
+
+/* Keyframes for the foil-sweep animation */
+@keyframes foil-sweep {
+  0% {
+    transform: translate(0%, 0%) rotate(0deg);
+    background-position: 0% 0%;
+  }
+  100% {
+    /* Moves the gradient diagonally and rotates it halfway */
+    transform: translate(-50%, -50%) rotate(180deg);
+    background-position: 100% 100%;
+  }
 }
 </style>

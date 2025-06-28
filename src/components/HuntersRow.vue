@@ -18,12 +18,13 @@ function handleRightClick(e, hunter) {
 </script>
 
 <template>
-  <div class="flex gap-7 p-0.25 mt-8 w-fit">
+  <div class="flex gap-7 p-0.25 mt-8 w-fit metalic">
     <Hunter
       v-for="(hunter, idx) in hunters"
       :key="`${hunter.name}-${idx}`"
       v-bind="hunter"
       :modifier="hunter.modifier"
+      :foil="hunter.foil"
       :shake="animationStore.hunterShakes[hunter.id]"
       @drop-weapon="$emit('drop-weapon', hunter.id)"
       @dragover.prevent
