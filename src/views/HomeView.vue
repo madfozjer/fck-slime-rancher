@@ -16,6 +16,7 @@ import Inventory from '@/components/Inventory.vue'
 import Gacha from '@/components/Gacha.vue'
 import Base from '@/components/Base.vue'
 import BitsCounter from '@/components/BitsCounter.vue'
+import Timer from '../components/Timer.vue'
 
 const topLeftTab = ref('gacha')
 
@@ -162,6 +163,45 @@ const avgAttackInterval = computed(() => {
 })
 
 let attackInterval = null
+
+var timerLength = 120
+var timeLeft = ref(timerLength)
+var timerRunning = false
+var timerInterval = null // To store the interval ID
+
+onMounted(() => {
+  startTimer()
+})
+
+function startTimer() {
+  if (timerRunning) return
+
+  timerRunning = true
+  timerInterval = setInterval(() => {
+    if (timeLeft.value > 0) {
+      timeLeft.value--
+    } else {
+      stopTimer()
+      // Add your "time's up" logic here, e.g., $emit('timer-end');
+    }
+  }, 1000)
+}
+
+function stopTimer() {
+  clearInterval(timerInterval)
+  timerRunning = false
+  timerInterval = null
+}
+
+function resetTimer() {
+  stopTimer()
+  timeLeft.value = timerLength
+}
+
+// Lifecycle hook to clean up the timer when the component is destroyed
+onUnmounted(() => {
+  stopTimer()
+})
 
 onMounted(() => {
   attackInterval = setInterval(() => {
@@ -336,7 +376,7 @@ const handleAnimationEnd = (type) => {
       </div>
 
       <div
-        class="w-full md:w-1/3 border-t md:border-t-0 md:border-l h-full flex flex-col items-center justify-start relative"
+        class="w-full md:w-1/3 border-t md:border-t-0 md:border-l h-full flex flex-col items-center justify-start relative border border-red-500"
         id="mob-container"
       >
         <MobDisplay
@@ -361,6 +401,7 @@ const handleAnimationEnd = (type) => {
           :shake="shakeBits"
           @animation-end="handleAnimationEnd('bits')"
         />
+        <Timer :timeLeft="timeLeft" class="justify-end items-end" />
       </div>
     </div>
 

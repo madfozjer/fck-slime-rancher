@@ -49,11 +49,6 @@ const tooltipClass = computed(() => {
       {{ mob.description }}
     </div>
     <div v-if="hp !== undefined && mob.maxHp !== undefined">HP: {{ hp }} / {{ mob.maxHp }}</div>
-    <div v-if="mob.price !== undefined">Price: {{ mob.price }}</div>
-    <div v-if="mob.attack !== undefined">ATK: {{ mob.attack }}</div>
-    <div v-if="mob.rarity">
-      Rarity: <span class="ml-1 text-green-700 font-semibold">{{ mob.rarity }}</span>
-    </div>
     <div v-if="mob.type">Type: {{ mob.type }}</div>
   </div>
 </template>

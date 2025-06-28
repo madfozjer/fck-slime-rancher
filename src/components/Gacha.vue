@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col items-center justify-center mt-auto">
-    <div v-if="drop" class="mb-2">
+    <div v-if="drop && !lookingData" class="mb-2">
       <h2 class="text-center text-xl font-light italic text-gray-800 opacity-75">You received</h2>
       <img :src="drop.img" v-if="drop.img" alt="Character Image" />
       <h2 class="text-center text-2xl font-bold text-animated" :class="rarityClasses[drop.rarity]">
@@ -9,14 +9,68 @@
     </div>
     <button
       @click="drawCharacter"
-      class="border-2 rounded-sm p-2 text-2xl font-semibold text-red-600 text-shadow-md"
+      class="border-2 rounded-sm p-2 text-2xl font-semibold text-red-600 text-shadow-md hover:cursor-pointer"
+      v-if="!lookingData"
     >
       GAMBLE!!!
     </button>
-    <div class="flex gap-1 text-md text-shadow-sm items-center">
+    <div class="flex gap-1 text-md text-shadow-sm items-center" v-if="!lookingData">
       <span class="font-mono text-xl font-bold text-red-400 transform -rotate-1 skew-x-1">
         You need to deposit {{ price }} {{ price != 1 ? 'bits' : 'bit' }}
       </span>
+    </div>
+    <button
+      @click="lookingData = !lookingData"
+      class="border-2 rounded-sm p-2 text-sm mt-4 font-semibold text-blue-600 text-shadow-md hover:cursor-pointer"
+    >
+      About
+    </button>
+    <div
+      v-if="lookingData"
+      class="flex flex-col justify-start items-start w-full border-2 rounded-md border-dotted h-full mt-4 p-4"
+    >
+      <div class="mb-4">
+        <span class="italic">Pretty boring banner </span>
+        <span class="font-mono italic text-xl">{{ gachaStore.banners[currentBanner].name }}</span>
+      </div>
+
+      <div class="w-full">
+        <div class="font-semibold text-lg mb-2">Content:</div>
+
+        <div
+          class="grid grid-cols-12 gap-2 pb-1 border-b border-gray-300 font-bold text-sm text-gray-700"
+        >
+          <div class="col-span-1">Type</div>
+          <div class="col-span-7">Name</div>
+          <div class="col-span-3">Rarity</div>
+          <div class="col-span-1 text-right">Chance</div>
+        </div>
+
+        <div
+          v-for="item in gachaStore.banners[currentBanner].content"
+          :key="item.name"
+          class="grid grid-cols-12 gap-2 py-1 border-b border-gray-100 items-center text-sm"
+        >
+          <div class="col-span-1 font-semibold font-mono text-center">
+            {{ item.type === 'Hunter' ? 'H' : 'W' }}
+          </div>
+          <div class="col-span-7 italic">{{ item.name }}</div>
+          <div
+            class="col-span-3 font-bold"
+            :class="item.rarity === 'Extra' ? 'text-green-600' : 'text-gray-600'"
+          >
+            {{ item.rarity }}
+          </div>
+          <div class="col-span-1 text-right">
+            {{
+              Math.floor(
+                (gachaStore.banners[currentBanner].chances[item.rarity] / amounts[item.rarity]) *
+                  100,
+              )
+            }}%
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -25,13 +79,25 @@
 import { computed, ref } from 'vue'
 import { useGachaStore } from '@/stores/Gacha.js'
 const gachaStore = useGachaStore()
+const currentBanner = 'Blank'
 
 const price = ref(1)
+const lookingData = ref(false)
+
+var amounts = {
+  Normal: 0,
+  Extra: 0,
+}
+
+gachaStore.banners[currentBanner].content.forEach((item) => {
+  if (item.rarity == 'Normal') amounts['Normal']++
+  if (item.rarity == 'Extra') amounts['Extra']++
+})
 
 const drop = ref(null)
 const drawCharacter = () => {
-  drop.value = gachaStore.rollGacha('Blank')
-  price.value = gachaStore.getPrice('Blank')
+  drop.value = gachaStore.rollGacha(currentBanner)
+  price.value = gachaStore.getPrice(currentBanner)
   console.log(rarityClasses[drop.value.rarity])
 }
 

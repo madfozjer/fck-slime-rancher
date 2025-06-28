@@ -6,15 +6,27 @@ export const useMobsStore = defineStore('mobs', () => {
   const mobs = ref([
     {
       name: 'Green Slime',
-      img: '/green-slime/green-slime.png',
+      img: 'mobs/green-slime/green-slime.png',
       alt: 'Green Slime',
-      hp: 10,
-      maxHp: 10,
+      hp: 20,
+      maxHp: 20,
       price: 1,
       bits: 1,
       description: 'a weak, bouncy blob of goon. ',
       borderColor: '#22c55e', // lime-500
-      damagedImg: '/green-slime/green-slime-damaged.png',
+      damagedImg: 'mobs/green-slime/green-slime-damaged.png',
+    },
+    {
+      name: 'Cutie Pie',
+      img: `mobs/cutie-pie/cutie-pie.png`,
+      alt: 'Cutie Pie',
+      hp: 25,
+      maxHp: 25,
+      price: 0,
+      bits: 0,
+      description: 'hello :3 pwease dont hurtf me ',
+      borderColor: '#c9f2fc ',
+      damagedImg: `mobs/cutie-pie/cutie-pie-damaged.png`,
     },
     // Add more mobs here in the future
   ])
