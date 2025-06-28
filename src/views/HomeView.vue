@@ -44,9 +44,20 @@ watch(currentMobIndex, (idx) => {
   if (currentMobIndex.value >= mobQueue.length) dungeonEnd()
 })
 
+var dungeonActive = ref(true)
+
 function dungeonEnd() {
+  dungeonActive.value = false
   playerStore.coins += 10
   alert('ГОООООООООООООООЛ')
+}
+
+function retry() {
+  dungeonActive.value = true
+  console.log(dungeonActive.value)
+  mobQueue.value = mobsStore.generateMobQueue(1)
+  currentMobIndex.value = 0
+  mob.value = { ...mobQueue[currentMobIndex.value] }
 }
 
 function killMob() {
@@ -190,6 +201,8 @@ function startTimer(time) {
       timeLeft.value--
     } else {
       mob.value = undefined
+      dungeonActive.value = false
+      console.log(`dungeonActive ${dungeonActive.value}`)
       stopTimer()
       // Add your "time's up" logic here, e.g., $emit('timer-end');
     }
@@ -377,6 +390,7 @@ const handleAnimationEnd = (type) => {
 <template>
   <div id="app" class="h-screen w-screen flex flex-col overflow-hidden">
     <button class="fixed" @click="(killMob(), console.log(`${mob.name} was killed`))">kill</button>
+    <div class="fixed ml-8">{{ dungeonActive }}</div>
     <div class="flex flex-col md:flex-row w-full flex-grow-[3]">
       <div class="w-full md:w-2/3 p-1">
         <div class="flex mb-2">
@@ -403,29 +417,44 @@ const handleAnimationEnd = (type) => {
         class="w-full md:w-1/3 border-t md:border-t-0 md:border-l h-full flex flex-col items-center justify-start relative border border-red-500"
         id="mob-container"
       >
-        <MobDisplay
-          :mob="mob"
-          :hp="hp"
-          :isShaking="isShaking"
-          :showDamagedImg="showDamagedImg"
-          :showDamagePop="showDamagePop"
-          :damagePopText="damagePopText"
-          :damagePopColor="damagePopColor"
-          :damagePopRotation="damagePopRotation"
-          :damagePopStyle="damagePopStyle"
-          :onDamage="increment"
+        <div class="z-1">
+          <CoinCounter
+            :count="playerStore.coins"
+            :shake="shakeCointer"
+            @animation-end="handleAnimationEnd('coin')"
+          />
+          <BitsCounter
+            :count="playerStore.bits"
+            :shake="shakeBits"
+            @animation-end="handleAnimationEnd('bits')"
+          />
+        </div>
+        <div v-if="dungeonActive">
+          <MobDisplay
+            :mob="mob"
+            :hp="hp"
+            :isShaking="isShaking"
+            :showDamagedImg="showDamagedImg"
+            :showDamagePop="showDamagePop"
+            :damagePopText="damagePopText"
+            :damagePopColor="damagePopColor"
+            :damagePopRotation="damagePopRotation"
+            :damagePopStyle="damagePopStyle"
+            :onDamage="increment"
+          />
+        </div>
+        <button
+          @click="retry()"
+          v-if="!dungeonActive"
+          class="text-xl text-green-800 font-bold border-4 border-dotted p-2 px-4 mt-64 mb-64 hover:bg-green-50 hover:cursor-pointer"
+        >
+          RETRY
+        </button>
+        <Timer
+          :timeLeft="timeLeft"
+          v-if="timerRunning & dungeonActive"
+          class="justify-end items-end"
         />
-        <CoinCounter
-          :count="playerStore.coins"
-          :shake="shakeCointer"
-          @animation-end="handleAnimationEnd('coin')"
-        />
-        <BitsCounter
-          :count="playerStore.bits"
-          :shake="shakeBits"
-          @animation-end="handleAnimationEnd('bits')"
-        />
-        <Timer :timeLeft="timeLeft" v-if="timerRunning" class="justify-end items-end" />
       </div>
     </div>
 
