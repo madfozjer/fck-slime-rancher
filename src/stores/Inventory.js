@@ -22,7 +22,7 @@ export const useInventoryStore = defineStore('inventory', {
       }
     },
 
-    async addHunter(name) {
+    async addHunter(name, effect) {
       const huntersStore = useHuntersStore()
       try {
         const hunter = huntersStore.getHunterByName(name)
@@ -30,6 +30,11 @@ export const useInventoryStore = defineStore('inventory', {
         if (hunter) {
           const newHunter = { ...hunter }
           newHunter.id = 2 + this.hunters.length
+
+          if (effect) {
+            if (effect == 'Foil') newHunter['foil'] = true
+          }
+
           this.hunters.push(newHunter)
           console.log(`Hunter "${newHunter.name}" added to inventory.`)
         } else {

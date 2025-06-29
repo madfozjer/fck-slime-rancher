@@ -27,7 +27,7 @@ const mobsStore = useMobsStore()
 const playerStore = usePlayerStore()
 
 // Generate mob queue from store
-const mobQueue = mobsStore.generateMobQueue(1)
+const mobQueue = mobsStore.generateMobQueue(9)
 
 // Track which mob is currently active
 const currentMobIndex = ref(0)
@@ -179,9 +179,25 @@ if (hunters.value.length <= 0) {
 
 // Calculate the average attack interval based on all hunters' speed
 const avgAttackInterval = computed(() => {
-  const intervals = hunters.value.map((h) => (h?.speed ? 1000 / h.speed : 1000))
-  if (intervals.length === 0) return 1000
-  return intervals.reduce((a, b) => a + b, 0) / intervals.length
+  const baseInterval = 1000 // Represents 1000ms or 1 second for a speed of 1
+
+  const validHunterIntervals = hunters.value
+    .map((hunter) => {
+      // Ensure speed is a positive number; otherwise, use a default slow speed
+      const effectiveSpeed = hunter?.speed && hunter.speed > 0 ? hunter.speed : 1 // Default to 1 if speed is invalid
+
+      // Higher speed results in a shorter interval (faster attack)
+      return baseInterval / effectiveSpeed
+    })
+    .filter((interval) => !isNaN(interval) && isFinite(interval)) // Filter out any non-numeric or infinite results
+
+  if (validHunterIntervals.length === 0) {
+    return baseInterval // Return a default interval if no valid hunters
+  }
+
+  // Calculate the average of the valid intervals
+  const totalIntervalSum = validHunterIntervals.reduce((sum, interval) => sum + interval, 0)
+  return totalIntervalSum / validHunterIntervals.length
 })
 
 let attackInterval = null
@@ -275,9 +291,8 @@ const dps = computed(() => {
     const psiDmg = weapon.psiDamage || 0
     const physMod = modifier.phys || 0
     const psiMod = modifier.psi || 0
-    const speed = h.speed || 0
 
-    const hunterDps = (physDmg * physMod + psiDmg * psiMod) * speed
+    const hunterDps = physDmg * physMod + psiDmg * psiMod
 
     return sum + hunterDps
   }, 0)
@@ -288,7 +303,7 @@ const dps = computed(() => {
     return '0.000'
   }
 
-  return totalDps.toFixed(3)
+  return totalDps.toFixed(2)
 })
 
 const dpsTooltip = ref(false)
@@ -493,29 +508,29 @@ const handleAnimationEnd = (type) => {
                   </span>
                   <span v-if="h.weapon" class="block mt-1 text-gray-700 ml-2">
                     <span class="font-semibold">Total:</span>
-                    <span class="text-blue-800">((</span
+                    <span class="text-blue-800">(</span
                     ><span class="text-red-700">{{ h.weapon.physDamage }}</span
                     ><span class="text-blue-800">×</span
                     ><span class="text-green-700">{{ h.modifier?.phys ?? 1 }}</span
-                    ><span class="text-blue-800">)</span> <span class="text-blue-800">+</span>
+                    ><span class="text-blue-800">)</span> <span class="text-blue-800">+(</span>
                     <span class="text-purple-700">{{ h.weapon.psiDamage }}</span
                     ><span class="text-blue-800">×</span
-                    ><span class="text-green-700">{{ h.modifier?.psi ?? 1 }}</span
-                    ><span class="text-blue-800">)) ×</span>
-                    <span class="text-pink-700">{{ h.speed }}</span>
+                    ><span class="text-green-700">{{ h.modifier?.psi ?? 1 }})</span>
                     <span class="text-blue-800">=</span>
                     <span class="font-mono text-orange-600">{{
                       (
-                        ((h.weapon.physDamage || 0) * (h.modifier?.phys ?? 1) +
-                          (h.weapon.psiDamage || 0) * (h.modifier?.psi ?? 1)) *
-                        (h.speed || 1)
+                        (h.weapon.physDamage || 0) * (h.modifier?.phys ?? 1) +
+                        (h.weapon.psiDamage || 0) * (h.modifier?.psi ?? 1)
                       ).toFixed(3)
                     }}</span>
                   </span>
                 </div>
               </div>
               <div class="mt-4 pt-2 border-t border-blue-200 text-lg font-bold text-center">
-                Final Total: <span class="text-orange-600">{{ dps }}</span>
+                Final Total: <span class="text-orange-600">{{ dps }}</span
+                ><br />
+                Attack interval:
+                <span class="text-green-600">{{ (avgAttackInterval / 1000).toFixed(2) }}</span>
               </div>
             </div>
             DPS: {{ dps }}

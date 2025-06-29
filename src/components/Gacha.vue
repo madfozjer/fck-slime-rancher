@@ -3,9 +3,16 @@
     <div v-if="drop && !lookingData" class="mb-2">
       <h2 class="text-center text-xl font-light italic text-gray-800 opacity-75">You received</h2>
       <img :src="drop.img" v-if="drop.img" alt="Character Image" />
-      <h2 class="text-center text-2xl font-bold text-animated" :class="rarityClasses[drop.rarity]">
+      <h2
+        @click="console.log(effects.includes('Foil'))"
+        class="text-center text-2xl font-bold text-animated"
+        :class="rarityClasses[drop.rarity]"
+      >
         {{ drop.name }}!
       </h2>
+      <h3 class="text-xl text-center foil-text font-bold" v-if="effects.includes('Foil')">
+        Baby, its foil!
+      </h3>
     </div>
     <button
       @click="drawCharacter"
@@ -55,12 +62,10 @@
             {{ item.type === 'Hunter' ? 'H' : 'W' }}
           </div>
           <div class="col-span-7 italic">{{ item.name }}</div>
-          <div
-            class="col-span-3 font-bold"
-            :class="item.rarity === 'Extra' ? 'text-green-600' : 'text-gray-600'"
-          >
+          <div class="col-span-3 font-bold" :class="rarityClasses[item.rarity]">
             {{ item.rarity }}
           </div>
+
           <div class="col-span-1 text-right">
             {{
               Math.floor(
@@ -70,6 +75,12 @@
             }}%
           </div>
         </div>
+      </div>
+      <div class="flex gap-2">
+        Your current luck:
+        <span class="text-yellow-600"
+          >{{ parseFloat(gachaStore.banners[currentBanner].currentLuck) }}%</span
+        >
       </div>
     </div>
   </div>
@@ -83,27 +94,36 @@ const currentBanner = 'Blank'
 
 const price = ref(1)
 const lookingData = ref(false)
+var effects = []
 
 var amounts = {
   Normal: 0,
   Extra: 0,
+  Extraordinary: 0,
 }
 
 gachaStore.banners[currentBanner].content.forEach((item) => {
   if (item.rarity == 'Normal') amounts['Normal']++
   if (item.rarity == 'Extra') amounts['Extra']++
+  if (item.rarity == 'Extraordinary') amounts['Extraordinary']++
 })
 
 const drop = ref(null)
 const drawCharacter = () => {
-  drop.value = gachaStore.rollGacha(currentBanner)
+  effects = []
+  const rollResult = gachaStore.rollGacha(currentBanner)
+  drop.value = rollResult[0]
+  if (rollResult[1] != 0)
+    rollResult[1].forEach((tag) => {
+      effects.push(tag)
+    })
   price.value = gachaStore.getPrice(currentBanner)
-  console.log(rarityClasses[drop.value.rarity])
 }
 
 const rarityClasses = {
   Normal: 'text-gray-600',
   Extra: 'text-green-600',
+  Extraordinary: 'text-purple-600',
 }
 </script>
 
@@ -119,5 +139,27 @@ const rarityClasses = {
   to {
     background-position: 200% center; /* Shift the background from left to right */
   }
+}
+
+.foil-text {
+  /* Core Foil Effect */
+  background: linear-gradient(
+    45deg,
+    #ff0000 0%,
+    /* Red */ #b95e03 15%,
+    /* Orange */ #b8b800 30%,
+    /* Yellow */ #005e00 45%,
+    /* Green */ #0000ff 60%,
+    /* Blue */ #4b0082 75%,
+    /* Indigo */ #9400d3 90%,
+    /* Violet */ #570202 100% /* Wrap back to Red for smooth animation if desired */
+  );
+  -webkit-background-clip: text; /* Clip background to the shape of the text */
+  background-clip: text;
+  -webkit-text-fill-color: transparent; /* Make text transparent so background shows */
+  color: transparent; /* Fallback for older browsers */
+
+  /* Optional: subtle shadow for depth */
+  text-shadow: 2px 2px 5px rgba(255, 0, 242, 0.4);
 }
 </style>

@@ -12,16 +12,17 @@ const BlankBanner = {
     { name: 'Jacob', rarity: 'Normal', type: 'Hunter' },
     { name: 'Dandy', rarity: 'Normal', type: 'Hunter' },
     { name: 'Cheese', rarity: 'Extra', type: 'Hunter' },
+    { name: 'Swidlerton', rarity: 'Extraordinary', type: 'Hunter' },
     { name: 'Wooden Sword', rarity: 'Normal', type: 'Weapon' },
     { name: 'Mind Wand', rarity: 'Normal', type: 'Weapon' },
   ],
-  baseTicketPrice: 0,
+  baseTicketPrice: 1,
   costIncreasePerRoll: 0.25,
-  luckIncreasePerNormalRoll: 0.01,
-  currentPrice: 0,
+  luckIncreasePerNormalRoll: 1,
+  currentPrice: 1,
   currentLuck: 0,
-  currentPriceFloat: 0.0,
-  chances: { Normal: 0.95, Extra: 0.05 },
+  currentPriceFloat: 1.0,
+  chances: { Normal: 0.9, Extra: 0.09, Extraordinary: 0.01 },
 }
 
 const banners = { Blank: BlankBanner }
@@ -48,7 +49,8 @@ export const useGachaStore = defineStore('gacha', {
 
         let rarity = 'Normal'
         if (roll > 0.9) {
-          rarity = 'Extra'
+          if (roll > 0.99) rarity = 'Extraordinary'
+          else rarity = 'Extra'
         }
 
         const itemsOfRarity = banners[banner].content.filter((item) => item.rarity === rarity)
@@ -66,22 +68,31 @@ export const useGachaStore = defineStore('gacha', {
           console.log(`luck state: ${banners[banner].currentLuck}`)
           console.log(`chance for extra hunter: ${0.1 + banners[banner].currentLuck}`)
 
-          if (rarity === 'Extra') {
+          if (rarity != 'Normal') {
             banners[banner].currentLuck = 0
           }
 
           if (drop.type == 'Hunter') {
-            // Add the hunter to the player's collection
-            this.InventoryStore.addHunter(drop.name)
+            const effects = []
+            drop['foil'] = false
+            const effectDrop = Math.floor(Math.random() * 100)
+            if (effectDrop > 93) {
+              effects.push('Foil')
+              this.InventoryStore.addHunter(drop.name, 'Foil')
+            } else {
+              // Add the hunter to the player's collection
+              effects.push('Standard')
+              this.InventoryStore.addHunter(drop.name)
+            }
 
             // Return the rolled hunter
-            return this.HunterStore.getHunterByName(drop.name)
+            return [this.HunterStore.getHunterByName(drop.name), effects]
           } else if (drop.type == 'Weapon') {
             // Add the weapon to the player's collection
             this.InventoryStore.addWeapon(drop.name)
 
             // Return the rolled weapon
-            return this.WeaponStore.getWeaponByName(drop.name)
+            return [this.WeaponStore.getWeaponByName(drop.name), 0]
           }
         } else {
           console.error(`No hunter found for rarity: ${rarity} in banner: ${banner}`)

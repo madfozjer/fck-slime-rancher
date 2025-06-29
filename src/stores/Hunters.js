@@ -8,7 +8,7 @@ export const useHuntersStore = defineStore('hunters', {
         name: 'Jacob',
         emoji: '🐱🤓',
         color: 'orange',
-        speed: 0.33,
+        speed: 3,
         img: '/hunters/Jacob/Jacob.png',
         weapon: null,
         rarity: 'Normal',
@@ -22,7 +22,7 @@ export const useHuntersStore = defineStore('hunters', {
         name: 'Dandy',
         emoji: '🐱🦇',
         color: 'gray',
-        speed: 0.2,
+        speed: 2,
         img: '/hunters/Dandy/Dandy.png',
         weapon: null,
         rarity: 'Normal',
@@ -36,7 +36,7 @@ export const useHuntersStore = defineStore('hunters', {
         name: 'Cheese',
         emoji: '🖤🌙',
         color: 'black',
-        speed: 0.45,
+        speed: 1,
         img: '/hunters/Cheese/Cheese.png',
         weapon: null,
         rarity: 'Extra',
@@ -45,7 +45,20 @@ export const useHuntersStore = defineStore('hunters', {
           psi: 3, // x3 psychic damage
         },
       },
-
+      {
+        id: 4,
+        name: 'Swidlerton',
+        emoji: '👑🦇💨',
+        color: 'darkmagenta',
+        speed: 100,
+        img: '/hunters/Swidlerton/Swidlerton.png',
+        weapon: null,
+        rarity: 'Extraordinary',
+        modifier: {
+          phys: 1,
+          psi: 1,
+        },
+      },
       // Add more hunters here as needed, following the same structure
     ],
   }),

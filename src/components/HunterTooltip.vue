@@ -12,6 +12,7 @@ const props = defineProps({
 const hunterRarityClasses = {
   Normal: 'text-gray-600',
   Extra: 'text-green-600',
+  Extraordinary: 'text-purple-600',
 }
 
 const rarityClass = computed(() => {
@@ -35,6 +36,8 @@ const tooltipClass = computed(() => {
     'top-7/10',
     'pointer-events-none', // Purely visual, won't block clicks (change to 'pointer-events-auto' if interactive)
     props.position === 'left' ? '-translate-x-1/2' : 'translate-x-1/2',
+    props.hunter.foil ? 'foil-border' : '',
+    'border-2px',
   ].join(' ')
 })
 </script>
@@ -47,12 +50,13 @@ const tooltipClass = computed(() => {
     :style="{
       minWidth: '320px',
       maxWidth: '400px',
-      border: '2px solid ' + (hunter.color || '#fbbf24'),
+      borderColor: hunter.color,
       boxShadow: '0 4px 24px 0 rgba(0,0,0,0.10)',
     }"
   >
     <div class="font-bold mb-2 flex items-center gap-2" style="border: none; background: none">
-      {{ hunter.name }}
+      <span class="-mr-1" v-if="hunter.foil">Foil</span>
+      <span> {{ hunter.name }}</span>
       <span class="italic font-mono font-normal text-sm text-gray-700">(#{{ hunter.id }})</span
       ><span v-if="hunter.emoji">{{ hunter.emoji }}</span>
     </div>
@@ -82,3 +86,27 @@ const tooltipClass = computed(() => {
     </div>
   </div>
 </template>
+
+<style scoped>
+.foil-border {
+  /* The core foil gradient for the border */
+  border-image: linear-gradient(
+    45deg,
+    #ff0000 0%,
+    /* Red */ #b95e03 15%,
+    /* Orange */ #b8b800 30%,
+    /* Yellow */ #005e00 45%,
+    /* Green */ #0000ff 60%,
+    /* Blue */ #4b0082 75%,
+    /* Indigo */ #9400d3 90%,
+    /* Violet */ #570202 100% /* Wrap back to Red for smooth animation if desired */
+  );
+
+  /* How to slice the image for the border. '1' means slice 1 CSS pixel from each edge. */
+  /* This value typically matches the border-width for simple gradients. */
+  border-image-slice: 1;
+
+  /* How the image sections fill the border. 'stretch' makes it fill the whole border. */
+  border-image-repeat: stretch;
+}
+</style>
