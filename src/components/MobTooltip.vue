@@ -11,24 +11,7 @@ const props = defineProps({
 })
 
 const tooltipClass = computed(() => {
-  return [
-    'absolute',
-    props.position === 'right' ? 'left-full ml-4' : 'right-full mr-4',
-    'top-1/2',
-    '-translate-y-1/2',
-    'bg-white',
-    'bg-opacity-90',
-    'rounded',
-    'shadow-lg',
-    'px-7',
-    'py-6',
-    'text-base',
-    'z-[9999]', // use a very high z-index for tooltips
-    'pointer-events-none',
-    'transition-opacity',
-    'duration-200',
-    'overflow-hidden',
-  ].join(' ')
+  return [props.position === 'right' ? 'left-full ml-4' : 'right-full mr-4'].join(' ')
 })
 </script>
 
@@ -36,6 +19,7 @@ const tooltipClass = computed(() => {
   <div
     v-if="mob"
     :class="tooltipClass"
+    class="absolute top-1/2 -translate-y-1/2 bg-white bg-opacity-90 rounded shadow-lg px-7 py-6 text-base z-[9999] pointer-events-none transition-opacity duration-200 overflow-hidden'"
     :style="{
       minWidth: '320px',
       maxWidth: '480px',
@@ -52,9 +36,3 @@ const tooltipClass = computed(() => {
     <div v-if="mob.type">Type: {{ mob.type }}</div>
   </div>
 </template>
-
-<style scoped>
-:deep(.z-\[9999\]) {
-  z-index: 9999 !important;
-}
-</style>

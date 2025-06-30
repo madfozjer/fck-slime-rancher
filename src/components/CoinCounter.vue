@@ -1,6 +1,6 @@
 <template>
   <div
-    class="absolute left-2/6 -translate-x-6 top-2 flex items-center gap-2 select-none bg-green-50/90 rounded-full px-6 py-2 shadow border-4 border-green-600 hover:bg-green-100/90"
+    class="absolute left-2/6 -translate-x-6 top-2 flex h-16 items-center gap-2 bg-green-50/90 rounded-full px-6 py-2 shadow border-4 border-green-600 hover:bg-green-100/90"
     :class="props.shake ? 'animate-counter-shake' : ''"
   >
     <span class="text-3xl text-green-800 font-bold shadow-xl">€</span>
@@ -72,4 +72,3 @@ watch(
   animation: counter-shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
 }
 </style>
-// This component displays a coin counter with a shaking animation when the count changes.

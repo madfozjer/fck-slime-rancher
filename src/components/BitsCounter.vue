@@ -1,10 +1,10 @@
 <template>
   <div
-    class="absolute left-3/6 translate-x-2 top-2 flex items-center gap-2 text-xl font-bold select-none bg-blue-50/90 rounded-full px-6 py-2 shadow border-4 border-blue-400 hover:bg-blue-100/90"
+    class="absolute left-3/6 translate-x-2 top-2 h-16 flex items-center gap-2 font-bold bg-blue-50/90 rounded-full px-6 py-2 shadow border-4 border-blue-400 hover:bg-blue-100/90"
     :class="props.shake ? 'animate-counter-shake' : ''"
   >
-    <span class="">💎</span>
-    <span class="text-green-900 drop-shadow">{{ count }}</span>
+    <span class="text-xl">💎</span>
+    <span class="text-green-900 drop-shadow text-xl"> {{ count }}</span>
   </div>
 </template>
 <script setup>
@@ -67,7 +67,6 @@ watch(
   }
 }
 .animate-counter-shake {
-  /* Fix: Changed animation name to 'counter-shake' */
   animation: counter-shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
 }
 </style>

@@ -6,17 +6,17 @@ export const usePlayerStore = defineStore('player', {
     bits: 0,
   }),
   actions: {
-    decrementCoins() {
+    decrementCoins(price) {
       if (this.coins > 0) {
-        this.coins -= 1
+        this.coins -= price
         return true
       }
       console.warn('Not enough coins to decrement.')
       return false
     },
-    decrementBits() {
+    decrementBits(price) {
       if (this.bits > 0) {
-        this.bits -= 1
+        this.bits -= parseInt(price)
         return true
       }
       console.warn('Not enough bits to decrement.')
@@ -33,9 +33,6 @@ export const usePlayerStore = defineStore('player', {
     },
     addBits(amount) {
       this.bits += amount
-    },
-    checkStore() {
-      return 'Hello world from Player Store!'
     },
   },
 })

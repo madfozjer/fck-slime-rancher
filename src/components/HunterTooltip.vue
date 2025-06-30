@@ -21,23 +21,8 @@ const rarityClass = computed(() => {
 
 const tooltipClass = computed(() => {
   return [
-    'fixed',
-    'bg-white',
-    'bg-opacity-95',
-    'border',
-    'border-blue-400',
-    'rounded',
-    'shadow-lg',
-    'px-5',
-    'py-4',
-    'text-sm',
-    'z-[9999]',
-    '-translate-y-9/10',
-    'top-7/10',
-    'pointer-events-none', // Purely visual, won't block clicks (change to 'pointer-events-auto' if interactive)
     props.position === 'left' ? '-translate-x-1/2' : 'translate-x-1/2',
     props.hunter.foil ? 'foil-border' : '',
-    'border-2px',
   ].join(' ')
 })
 </script>
@@ -46,7 +31,7 @@ const tooltipClass = computed(() => {
   <div
     v-if="hunter"
     :class="tooltipClass"
-    class="whitespace-normal"
+    class="fixed bg-white bg-opacity-95 border border-blue-400 rounded shadow-lg px-5 py-4 text-sm z-[9999] -translate-y-9/10 top-7/10 border-2px pointer-events-none whitespace-normal"
     :style="{
       minWidth: '320px',
       maxWidth: '400px',
@@ -57,8 +42,8 @@ const tooltipClass = computed(() => {
     <div class="font-bold mb-2 flex items-center gap-2" style="border: none; background: none">
       <span class="-mr-1" v-if="hunter.foil">Foil</span>
       <span> {{ hunter.name }}</span>
-      <span class="italic font-mono font-normal text-sm text-gray-700">(#{{ hunter.id }})</span
-      ><span v-if="hunter.emoji">{{ hunter.emoji }}</span>
+      <span v-if="hunter.emoji" class="-ml-1">{{ hunter.emoji }}</span>
+      <span class="italic text-sm text-gray-500 opacity-85 -ml-1">(#{{ hunter.id }})</span>
     </div>
     <div v-if="hunter.weapon" class="mb-1" style="border: none; background: none">
       <span class="font-semibold">Weapon:</span> {{ hunter.weapon.name }}
@@ -77,12 +62,12 @@ const tooltipClass = computed(() => {
         <span class="text-purple-700">Psi x{{ hunter.modifier.psi }}</span>
       </span>
     </div>
-    <div v-if="hunter.rarity" class="mt-1" style="border: none; background: none">
-      <span class="font-semibold">Rarity:</span>
-      <span class="ml-1 font-semibold" :class="rarityClass">{{ hunter.rarity }}</span>
+    <div v-if="hunter.rarity" class="mt-1 font-semibold" style="border: none; background: none">
+      <span class="">Rarity:</span>
+      <span class="ml-1" :class="rarityClass">{{ hunter.rarity }}</span>
     </div>
-    <div v-if="hunter.speed" class="mt-1" style="border: none; background: none">
-      <span class="font-semibold">Speed:</span> {{ hunter.speed }}
+    <div v-if="hunter.speed" class="mt-1 font-semibold" style="border: none; background: none">
+      <span class="">Speed:</span> {{ hunter.speed }}
     </div>
   </div>
 </template>
@@ -93,13 +78,13 @@ const tooltipClass = computed(() => {
   border-image: linear-gradient(
     45deg,
     #ff0000 0%,
-    /* Red */ #b95e03 15%,
-    /* Orange */ #b8b800 30%,
-    /* Yellow */ #005e00 45%,
-    /* Green */ #0000ff 60%,
-    /* Blue */ #4b0082 75%,
-    /* Indigo */ #9400d3 90%,
-    /* Violet */ #570202 100% /* Wrap back to Red for smooth animation if desired */
+    #b95e03 15%,
+    #b8b800 30%,
+    #005e00 45%,
+    #0000ff 60%,
+    #4b0082 75%,
+    #9400d3 90%,
+    #570202 100% /* Wrap back to this for smooth animation if desired */
   );
 
   /* How to slice the image for the border. '1' means slice 1 CSS pixel from each edge. */

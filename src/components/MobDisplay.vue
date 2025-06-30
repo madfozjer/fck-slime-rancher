@@ -16,7 +16,6 @@
         @mouseenter="isTooltipVisible = true"
         @mouseleave="isTooltipVisible = false"
       />
-      <!-- Mob info tooltip -->
       <MobTooltip v-if="isTooltipVisible" :mob="mob" :hp="hp" position="left" />
       <DamagePop
         :show="showDamagePop"
@@ -63,7 +62,7 @@ import { ref, watch } from 'vue'
 const props = defineProps({
   mob: Object,
   hp: Number,
-  isShaking: Boolean, // keep for compatibility, but will use store
+  isShaking: Boolean,
   showDamagedImg: Boolean,
   showDamagePop: Boolean,
   damagePopText: String,
@@ -133,7 +132,6 @@ watch(
   animation: slime-shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
 }
 
-/* Add this for the mob name shake */
 @keyframes hp-shake {
   0% {
     transform: translateX(0);

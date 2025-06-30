@@ -1,13 +1,9 @@
 <template>
-  <div class="flex flex-col items-center justify-center mt-auto">
-    <div v-if="drop && !lookingData" class="mb-2">
+  <div class="flex flex-col items-center justify-center">
+    <div v-if="drop && !lookingData">
       <h2 class="text-center text-xl font-light italic text-gray-800 opacity-75">You received</h2>
-      <img :src="drop.img" v-if="drop.img" alt="Character Image" />
-      <h2
-        @click="console.log(effects.includes('Foil'))"
-        class="text-center text-2xl font-bold text-animated"
-        :class="rarityClasses[drop.rarity]"
-      >
+      <img :src="drop.img" v-if="drop.img" :alt="drop.name" />
+      <h2 class="text-center text-2xl font-bold text-animated" :class="rarityClasses[drop.rarity]">
         {{ drop.name }}!
       </h2>
       <h3 class="text-xl text-center foil-text font-bold" v-if="effects.includes('Foil')">
@@ -16,7 +12,7 @@
     </div>
     <button
       @click="drawCharacter"
-      class="border-2 rounded-sm p-2 text-2xl font-semibold text-red-600 text-shadow-md hover:cursor-pointer"
+      class="border-2 rounded-sm p-2 text-2xl font-semibold text-red-600 text-shadow-md hover:cursor-pointer mt-2"
       v-if="!lookingData"
     >
       GAMBLE!!!
@@ -28,7 +24,7 @@
     </div>
     <button
       @click="lookingData = !lookingData"
-      class="border-2 rounded-sm p-2 text-sm mt-4 font-semibold text-blue-600 text-shadow-md hover:cursor-pointer"
+      class="border-2 rounded-sm p-2 text-sm mt-2 font-semibold text-blue-600 text-shadow-md hover:cursor-pointer"
     >
       About
     </button>
@@ -37,8 +33,10 @@
       class="flex flex-col justify-start items-start w-full border-2 rounded-md border-dotted h-full mt-4 p-4"
     >
       <div class="mb-4">
-        <span class="italic">Pretty boring banner </span>
-        <span class="font-mono italic text-xl">{{ gachaStore.banners[currentBanner].name }}</span>
+        <span class="italic text-xl">Pretty boring banner </span>
+        <span class="font-mono font-thin italic text-xl ml-1">{{
+          gachaStore.banners[currentBanner].name
+        }}</span>
       </div>
 
       <div class="w-full">
@@ -47,7 +45,7 @@
         <div
           class="grid grid-cols-12 gap-2 pb-1 border-b border-gray-300 font-bold text-sm text-gray-700"
         >
-          <div class="col-span-1">Type</div>
+          <div class="col-span-1 text-center">Type</div>
           <div class="col-span-7">Name</div>
           <div class="col-span-3">Rarity</div>
           <div class="col-span-1 text-right">Chance</div>
@@ -79,7 +77,7 @@
       <div class="flex gap-2">
         Your current luck:
         <span class="text-yellow-600"
-          >{{ parseFloat(gachaStore.banners[currentBanner].currentLuck) }}%</span
+          >{{ parseFloat(gachaStore.banners[currentBanner].currentLuck) * 100 }}%</span
         >
       </div>
     </div>
@@ -87,7 +85,7 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 import { useGachaStore } from '@/stores/Gacha.js'
 const gachaStore = useGachaStore()
 const currentBanner = 'Blank'
@@ -112,11 +110,13 @@ const drop = ref(null)
 const drawCharacter = () => {
   effects = []
   const rollResult = gachaStore.rollGacha(currentBanner)
-  drop.value = rollResult[0]
-  if (rollResult[1] != 0)
-    rollResult[1].forEach((tag) => {
-      effects.push(tag)
-    })
+  if (rollResult) {
+    drop.value = rollResult[0]
+    if (rollResult[1] != 0)
+      rollResult[1].forEach((tag) => {
+        effects.push(tag)
+      })
+  }
   price.value = gachaStore.getPrice(currentBanner)
 }
 
@@ -146,20 +146,20 @@ const rarityClasses = {
   background: linear-gradient(
     45deg,
     #ff0000 0%,
-    /* Red */ #b95e03 15%,
-    /* Orange */ #b8b800 30%,
-    /* Yellow */ #005e00 45%,
-    /* Green */ #0000ff 60%,
-    /* Blue */ #4b0082 75%,
-    /* Indigo */ #9400d3 90%,
-    /* Violet */ #570202 100% /* Wrap back to Red for smooth animation if desired */
+    #b95e03 15%,
+    #b8b800 30%,
+    #005e00 45%,
+    #0000ff 60%,
+    #4b0082 75%,
+    #9400d3 90%,
+    #570202 100% /* Wrap back to this for smooth animation if desired */
   );
   -webkit-background-clip: text; /* Clip background to the shape of the text */
   background-clip: text;
   -webkit-text-fill-color: transparent; /* Make text transparent so background shows */
   color: transparent; /* Fallback for older browsers */
 
-  /* Optional: subtle shadow for depth */
+  /* Subtle shadow for depth */
   text-shadow: 2px 2px 5px rgba(255, 0, 242, 0.4);
 }
 </style>

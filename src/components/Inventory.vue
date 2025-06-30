@@ -54,7 +54,6 @@ const showWeaponTooltip = ref(null)
             @dragstart="$emit('drag-hunter', h.id)"
             @mouseenter="showHunterTooltip = h.id"
             @mouseleave="showHunterTooltip = null"
-            @click="console.log(h)"
           >
             <img :src="h.img" :alt="h.name" class="w-10 h-10 rounded-full border mb-1" />
             <span class="text-xs font-semibold text-blue-900 text-center">{{ h.name }}</span>

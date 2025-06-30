@@ -2,18 +2,17 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
 export const useMobsStore = defineStore('mobs', () => {
-  // List of all mob templates
   const mobs = ref([
     {
       name: 'Green Slime',
       img: 'mobs/green-slime/green-slime.png',
       alt: 'Green Slime',
-      hp: 20,
-      maxHp: 20,
+      hp: 23,
+      maxHp: 23,
       price: 1,
       bits: 1,
       description: 'a weak, bouncy blob of goon. ',
-      borderColor: '#22c55e', // lime-500
+      borderColor: '#22c55e',
       damagedImg: 'mobs/green-slime/green-slime-damaged.png',
       boss: false,
     },
@@ -21,16 +20,15 @@ export const useMobsStore = defineStore('mobs', () => {
       name: 'Cutie Pie',
       img: `mobs/cutie-pie/cutie-pie.png`,
       alt: 'Cutie Pie',
-      hp: 25,
-      maxHp: 25,
+      hp: 30,
+      maxHp: 30,
       price: 0,
-      bits: 0,
+      bits: 1,
       description: 'hello :3 pwease dont hurtf me ',
       borderColor: '#c9f2fc ',
       damagedImg: `mobs/cutie-pie/cutie-pie-damaged.png`,
       boss: false,
     },
-    // Add more mobs here in the future
   ])
 
   const bosses = ref([
@@ -38,8 +36,8 @@ export const useMobsStore = defineStore('mobs', () => {
       name: 'Cutie Pie Boss',
       img: `mobs/cutie-pie/cutie-pie.png`,
       alt: 'Cutie Pie',
-      hp: 100,
-      maxHp: 100,
+      hp: 175,
+      maxHp: 175,
       price: 3,
       bits: 0,
       description: 'ima big boy now',
@@ -62,7 +60,6 @@ export const useMobsStore = defineStore('mobs', () => {
   }
 
   function getMob(name) {
-    // Find a mob by its name
     return mobs.value.find((mob) => mob.name === name)
   }
 

@@ -7,7 +7,6 @@ import { useWeaponsStore } from './Weapons.js'
 
 const BlankBanner = {
   name: 'exterminate (all) blankies',
-  img: '',
   content: [
     { name: 'Jacob', rarity: 'Normal', type: 'Hunter' },
     { name: 'Dandy', rarity: 'Normal', type: 'Hunter' },
@@ -18,11 +17,12 @@ const BlankBanner = {
   ],
   baseTicketPrice: 1,
   costIncreasePerRoll: 0.25,
-  luckIncreasePerNormalRoll: 1,
+  luckIncreasePerNormalRoll: 0.005,
   currentPrice: 1,
   currentLuck: 0,
   currentPriceFloat: 1.0,
   chances: { Normal: 0.9, Extra: 0.09, Extraordinary: 0.01 },
+  canDropEffects: ['Foil'],
 }
 
 const banners = { Blank: BlankBanner }
@@ -48,8 +48,11 @@ export const useGachaStore = defineStore('gacha', {
         const roll = Math.random() + banners[banner].currentLuck
 
         let rarity = 'Normal'
-        if (roll > 0.9) {
-          if (roll > 0.99) rarity = 'Extraordinary'
+
+        let chanceTable = this.banners[banner].chances
+
+        if (roll > chanceTable['Normal']) {
+          if (roll > chanceTable['Normal'] + chanceTable['Extra']) rarity = 'Extraordinary'
           else rarity = 'Extra'
         }
 
@@ -65,20 +68,19 @@ export const useGachaStore = defineStore('gacha', {
 
           banners[banner].currentPrice = Math.floor(banners[banner].currentPriceFloat)
 
-          console.log(`luck state: ${banners[banner].currentLuck}`)
-          console.log(`chance for extra hunter: ${0.1 + banners[banner].currentLuck}`)
-
           if (rarity != 'Normal') {
             banners[banner].currentLuck = 0
           }
 
           if (drop.type == 'Hunter') {
             const effects = []
-            drop['foil'] = false
-            const effectDrop = Math.floor(Math.random() * 100)
-            if (effectDrop > 93) {
-              effects.push('Foil')
-              this.InventoryStore.addHunter(drop.name, 'Foil')
+            if (this.banners[banner].canDropEffects.includes('Foil')) {
+              drop['foil'] = false
+              const effectDrop = Math.floor(Math.random() * 100)
+              if (effectDrop > 93) {
+                effects.push('Foil')
+                this.InventoryStore.addHunter(drop.name, 'Foil')
+              }
             } else {
               // Add the hunter to the player's collection
               effects.push('Standard')
@@ -98,10 +100,7 @@ export const useGachaStore = defineStore('gacha', {
           console.error(`No hunter found for rarity: ${rarity} in banner: ${banner}`)
           return null
         }
-      } else {
-        alert(`Not enough bits to roll the gacha, you have only ${this.PlayerStore.getBits()} bits`)
-        return null
-      }
+      } else return null
     },
     getPrice(banner) {
       if (!banners[banner]) {

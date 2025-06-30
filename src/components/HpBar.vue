@@ -1,8 +1,6 @@
 <template>
   <div class="w-full mt-1 flex justify-center flex-col items-center">
-    <div
-      class="w-full max-w-md h-2 bg-lime-200 rounded-full border-2 border-lime-500 overflow-hidden shadow-inner"
-    >
+    <div class="w-full max-w-md h-2 bg-lime-200 rounded-full shadow-md overflow-hidden">
       <div
         class="h-full transition-all duration-300"
         :class="barClass"
@@ -10,7 +8,7 @@
       ></div>
     </div>
     <div
-      class="text-[18px] text-lime-800 font-extrabold mt-0.5 text-center select-none"
+      class="text-[18px] text-lime-800 font-extrabold mt-0.5 text-center"
       :class="isShaking ? 'animate-hp-shake' : ''"
       style="
         font-family:

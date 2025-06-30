@@ -13,8 +13,8 @@ export const useHuntersStore = defineStore('hunters', {
         weapon: null,
         rarity: 'Normal',
         modifier: {
-          phys: 1.5, // x1.5 physical damage
-          psi: 1, // x1 psychic damage (no change)
+          phys: 1.5,
+          psi: 1,
         },
       },
       {
@@ -27,8 +27,8 @@ export const useHuntersStore = defineStore('hunters', {
         weapon: null,
         rarity: 'Normal',
         modifier: {
-          phys: 0.5, // x0.5 physical damage
-          psi: 2, // x3 psychic damage
+          phys: 0.5,
+          psi: 2,
         },
       },
       {
@@ -41,8 +41,8 @@ export const useHuntersStore = defineStore('hunters', {
         weapon: null,
         rarity: 'Extra',
         modifier: {
-          phys: 0, // no physical damage
-          psi: 3, // x3 psychic damage
+          phys: 0,
+          psi: 3,
         },
       },
       {

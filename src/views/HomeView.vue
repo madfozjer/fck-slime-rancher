@@ -1,5 +1,4 @@
 <script setup>
-// Import Vue Composition API helpers
 import { ref, watch, computed, onMounted, onUnmounted } from 'vue'
 
 import { damageTexts, damageColors, damageRotations } from '@/stores/DamageTexts.js'
@@ -20,14 +19,11 @@ import Timer from '../components/Timer.vue'
 
 const topLeftTab = ref('gacha')
 
-// Use the mobs store
 const mobsStore = useMobsStore()
 
-// Use the player store to get the player's coin count
 const playerStore = usePlayerStore()
 
-// Generate mob queue from store
-const mobQueue = mobsStore.generateMobQueue(9)
+const mobQueue = mobsStore.generateMobQueue(20)
 
 // Track which mob is currently active
 const currentMobIndex = ref(0)
@@ -48,7 +44,7 @@ var dungeonActive = ref(true)
 
 function dungeonEnd() {
   dungeonActive.value = false
-  playerStore.coins += 10
+  playerStore.bits += 20
   alert('ГОООООООООООООООЛ')
 }
 
@@ -65,7 +61,6 @@ function killMob() {
 }
 
 // For HP bar animation and shake effect
-const hpBar = ref(null)
 const animationStore = useAnimationStore()
 
 const isShaking = computed(() => animationStore.mobShake)
@@ -107,19 +102,6 @@ function triggerDamagePop() {
   }, 400)
 }
 
-// Compute the HP bar's color and shake class
-const hpBarClass = computed(() => {
-  let colorClass =
-    hp.value === mob.value.maxHp
-      ? 'bg-lime-400'
-      : hp.value > mob.value.maxHp * 0.5
-        ? 'bg-yellow-300'
-        : hp.value > 0
-          ? 'bg-red-400'
-          : 'bg-gray-400'
-  return [colorClass, isShaking.value ? 'animate-hp-shake' : '']
-})
-
 // Watch for HP changes to trigger shake animation
 watch(hp, (newHp, oldHp) => {
   if (newHp < oldHp) {
@@ -152,7 +134,7 @@ function increment() {
       playerStore.coins += mob.value.price
     }
     // If mob dies, move to next and add coins
-    if (hp.value === 0 && currentMobIndex.value < mobQueue.length - 1) {
+    if (hp.value <= 0 && currentMobIndex.value < mobQueue.length) {
       handleDeath()
     }
   }
@@ -256,7 +238,7 @@ onMounted(() => {
       if (totalAtk > 0) {
         hp.value = Math.max(0, Math.round((hp.value - totalAtk) * 100) / 100)
         // If mob dies, move to next and add coins
-        if (hp.value === 0 && currentMobIndex.value < mobQueue.length - 1) {
+        if (hp.value <= 0 && currentMobIndex.value < mobQueue.length) {
           handleDeath()
         }
       }
@@ -318,6 +300,7 @@ function onDragHunter(hunterId) {
   if (hunterId) draggedHunterId.value = hunterId
 }
 
+// TODO: checkout later and maybe refactor
 function onDropWeapon(hunterId) {
   if (draggedWeaponId.value == null) return
   // Find the hunter and weapon
@@ -336,6 +319,7 @@ function onDropWeapon(hunterId) {
   // Trigger shake animation for this hunter
   animationStore.triggerHunterShake(hunter.id)
   draggedWeaponId.value = null
+  inventoryStore.activeWeapons++
 }
 
 function onDropHunter(targetHunterId) {
@@ -403,9 +387,14 @@ const handleAnimationEnd = (type) => {
 </script>
 
 <template>
+  <!-- TODO: 
+   PHONE PROTECTION/PHONE COMPATABILITY 
+   -->
   <div id="app" class="h-screen w-screen flex flex-col overflow-hidden">
-    <button class="fixed" @click="(killMob(), console.log(`${mob.name} was killed`))">kill</button>
+    <!-- DEV TOOLS
+    <button class="fixed" @click="(illMob())">kill</button>
     <div class="fixed ml-8">{{ dungeonActive }}</div>
+    -->
     <div class="flex flex-col md:flex-row w-full flex-grow-[3]">
       <div class="w-full md:w-2/3 p-1">
         <div class="flex mb-2">
@@ -429,7 +418,7 @@ const handleAnimationEnd = (type) => {
       </div>
 
       <div
-        class="w-full md:w-1/3 border-t md:border-t-0 md:border-l h-full flex flex-col items-center justify-start relative border border-red-500"
+        class="w-full md:w-1/3 border-t h-full flex flex-col items-center justify-start relative border"
         id="mob-container"
       >
         <div class="z-1">
@@ -549,6 +538,9 @@ const handleAnimationEnd = (type) => {
           />
         </div>
       </div>
+    </div>
+    <div class="font-mono opacity-65 text-gray-700 fixed bottom-2 right-8 pointer-events-none">
+      v. a.0.1
     </div>
   </div>
 </template>

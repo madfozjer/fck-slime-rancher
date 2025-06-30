@@ -1,7 +1,6 @@
-// Inventory.js
 import { defineStore } from 'pinia'
-import { useHuntersStore } from './Hunters.js' // Make sure paths are correct
-import { useWeaponsStore } from './Weapons.js' // Make sure paths are correct
+import { useHuntersStore } from './Hunters.js'
+import { useWeaponsStore } from './Weapons.js'
 
 export const useInventoryStore = defineStore('inventory', {
   state: () => ({
@@ -9,15 +8,15 @@ export const useInventoryStore = defineStore('inventory', {
     weapons: [], // All obtained weapons
     activeHunters: 0,
     activeWeapons: 0,
+    currentHunterID: 2,
+    currentWeaponID: 2,
   }),
   actions: {
     initializeInventory() {
       if (this.hunters.length <= 0 && this.weapons.length <= 0) {
-        const weaponsStore = useWeaponsStore()
         this.addHunter('Jacob')
         this.hunters[0].id = 1
         this.addWeapon('Wooden Sword')
-        this.hunters[0].weapon = weaponsStore.getWeaponByName('Mind Wand')
         console.log('Initialized inventory')
       }
     },
@@ -29,20 +28,16 @@ export const useInventoryStore = defineStore('inventory', {
 
         if (hunter) {
           const newHunter = { ...hunter }
-          newHunter.id = 2 + this.hunters.length
+          newHunter.id = 1 + this.currentHunterID
+          this.currentHunterID++
 
           if (effect) {
             if (effect == 'Foil') newHunter['foil'] = true
           }
 
           this.hunters.push(newHunter)
-          console.log(`Hunter "${newHunter.name}" added to inventory.`)
-        } else {
-          console.warn(`Hunter "${name}" not found in HuntersStore.`)
         }
-      } catch (error) {
-        console.error(`Error adding hunter "${name}":`, error)
-      }
+      } catch (error) {}
     },
 
     async addWeapon(name) {
@@ -52,16 +47,12 @@ export const useInventoryStore = defineStore('inventory', {
 
         if (weapon) {
           const newWeaapon = { ...weapon }
-          newWeaapon.id = 2 + this.weapons.length
+          newWeaapon.id = 1 + this.currentWeaponID
+          this.currentWeaponID++
           this.weapons.push(newWeaapon)
-          console.log(`Weapon "${newWeaapon.name}" added to inventory.`)
         } else {
-          console.warn(`newWeaapon "${name}" not found in WeaponsStore.`)
         }
-      } catch (error) {
-        console.error(`Error adding weapon "${name}":`, error)
-      }
+      } catch (error) {}
     },
-    // Add more inventory management actions here later
   },
 })

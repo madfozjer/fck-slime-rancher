@@ -1,5 +1,5 @@
 <script setup>
-import { defineProps, ref, watch, onBeforeUnmount } from 'vue' // Add onBeforeUnmount here
+import { defineProps, ref, watch, onBeforeUnmount } from 'vue'
 import { useAnimationStore } from '@/stores/Animation.js'
 import HunterTooltip from '@/components/HunterTooltip.vue'
 
@@ -14,15 +14,12 @@ const props = defineProps({
   speed: Number,
   modifier: Object,
   foil: Boolean,
-  // Add more hunter stats as needed
 })
 
 const emit = defineEmits(['drop-weapon', 'single-click', 'double-click', 'unequip'])
 
-// Add these lines below isExist
 const clickTimer = ref(null)
 const clickCount = ref(0)
-const doubleClickThreshold = 300
 
 const animationStore = useAnimationStore()
 const isShaking = ref(false)
@@ -33,7 +30,6 @@ const isExist = ref(true)
 
 if (props.id == undefined) isExist.value = false
 
-// Add these functions below the isExist check
 function handleMainClick() {
   if (!isExist.value) {
     return
@@ -46,7 +42,7 @@ function handleMainClick() {
       emit('single-click', props.id)
       emit('drop-weapon', props.id)
       resetClickState()
-    }, doubleClickThreshold)
+    }, 300)
   } else if (clickCount.value === 2) {
     clearTimeout(clickTimer.value)
     emit('double-click', props.id)
@@ -61,7 +57,6 @@ function resetClickState() {
   clickTimer.value = null
 }
 
-// Add this onBeforeUnmount hook
 onBeforeUnmount(() => {
   if (clickTimer.value) {
     clearTimeout(clickTimer.value)
@@ -105,6 +100,7 @@ watch(
       }"
       :class="foil ? 'foil-shimmer-circle' : ''"
     ></div>
+
     <!-- Hunter image -->
     <img
       :src="
@@ -120,7 +116,7 @@ watch(
       class="relative z-10"
       :class="isShaking && isExist ? 'animate-hunter-shake' : ''"
     />
-    <!-- Info tooltip -->
+
     <HunterTooltip v-if="isTooltipVisible && isExist" :hunter="props" position="left" />
   </div>
 </template>
@@ -167,13 +163,13 @@ watch(
   height: 200%; /* Make the pseudo-element larger than the circle */
   background: linear-gradient(
     120deg,
-    /* Angle of the rainbow gradient */ #ff0000,
-    /* Red */ #ff7f00,
-    /* Orange */ #ffff00,
-    /* Yellow */ #00ff00,
-    /* Green */ #0000ff,
-    /* Blue */ #4b0082,
-    /* Indigo */ #9400d3 /* Violet */
+    #ff0000,
+    #ff7f00,
+    #ffff00,
+    #00ff00,
+    #0000ff,
+    #4b0082,
+    #9400d3
   );
   background-size: 200% 200%; /* Ensure the large gradient covers the expanded pseudo-element */
   /* Changed animation to go back and forth using 'alternate' */
