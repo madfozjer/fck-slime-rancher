@@ -1,6 +1,9 @@
 <script setup>
 import { ref, watch, computed, onMounted, onUnmounted } from 'vue'
-
+/*TODO:
+   PHONE PROTECTION/PHONE COMPATABILITY
+   SAVE PROTECTION AND ENCRYPTION
+*/
 import { damageTexts, damageColors, damageRotations } from '@/stores/DamageTexts.js'
 import MobDisplay from '@/components/MobDisplay.vue'
 import CoinCounter from '@/components/CoinCounter.vue'
@@ -22,6 +25,7 @@ const topLeftTab = ref('gacha')
 const mobsStore = useMobsStore()
 
 const playerStore = usePlayerStore()
+playerStore.init()
 
 const mobQueue = mobsStore.generateMobQueue(20)
 
@@ -131,7 +135,7 @@ function increment() {
     shakeCointer.value = true
     hp.value = Math.max(0, Math.round(hp.value * 100) / 100) // Round to 2 decimal place
     if (Math.random() > 0.95) {
-      playerStore.coins += mob.value.price
+      playerStore.addCoins(mob.value.price)
     }
     // If mob dies, move to next and add coins
     if (hp.value <= 0 && currentMobIndex.value < mobQueue.length) {
@@ -150,7 +154,10 @@ const inventoryStore = useInventoryStore()
 inventoryStore.initializeInventory()
 
 // Use hunters from the store as a reactive array
-const hunters = ref([])
+const hunters = ref(null)
+if (localStorage.getItem('activeHunters'))
+  hunters.value = JSON.parse(localStorage.getItem('activeHunters'))
+else hunters.value = []
 
 if (hunters.value.length <= 0) {
   hunters.value.push(huntersStore.getHunterById(2))
@@ -253,8 +260,8 @@ onUnmounted(() => {
 function handleDeath() {
   if (mob.value.boss) stopTimer()
   currentMobIndex.value++
-  playerStore.coins += mob.value.price
-  playerStore.bits += mob.value.bits
+  playerStore.addCoins(mob.value.price)
+  playerStore.addBits(mob.value.bits)
   shakeCointer.value = true
   shakeBits.value = true
 }
@@ -292,6 +299,8 @@ const dpsTooltip = ref(false)
 let draggedWeaponId = ref(null)
 let draggedHunterId = ref(null)
 
+const saveEditor = ref(false)
+
 function onDragWeapon(weaponId) {
   draggedWeaponId.value = weaponId
 }
@@ -320,6 +329,8 @@ function onDropWeapon(hunterId) {
   animationStore.triggerHunterShake(hunter.id)
   draggedWeaponId.value = null
   inventoryStore.activeWeapons++
+  playerStore.setActiveHunters(hunters.value)
+  inventoryStore.updateStorage()
 }
 
 function onDropHunter(targetHunterId) {
@@ -342,6 +353,8 @@ function onDropHunter(targetHunterId) {
   animationStore.triggerHunterShake(newHunter.id)
   draggedHunterId.value = null
   inventoryStore.activeHunters++
+  playerStore.setActiveHunters(hunters.value)
+  inventoryStore.updateStorage()
 }
 
 function onUnequipHunter(hunterId) {
@@ -357,6 +370,8 @@ function onUnequipHunter(hunterId) {
   // Trigger shake animation for this hunter
   animationStore.triggerHunterShake(hunter.id)
   inventoryStore.activeWeapons--
+  playerStore.setActiveHunters(hunters.value)
+  inventoryStore.updateStorage()
 }
 
 function onPullHunter(hunterId, hunterSlot) {
@@ -375,6 +390,8 @@ function onPullHunter(hunterId, hunterSlot) {
   hunters.value.push({})
   console.log(hunters.value)
   inventoryStore.activeHunters--
+  playerStore.setActiveHunters(hunters.value)
+  inventoryStore.updateStorage()
 }
 
 const handleAnimationEnd = (type) => {
@@ -387,9 +404,6 @@ const handleAnimationEnd = (type) => {
 </script>
 
 <template>
-  <!-- TODO: 
-   PHONE PROTECTION/PHONE COMPATABILITY 
-   -->
   <div id="app" class="h-screen w-screen flex flex-col overflow-hidden">
     <!-- DEV TOOLS
     <button class="fixed" @click="(illMob())">kill</button>
@@ -541,6 +555,28 @@ const handleAnimationEnd = (type) => {
     </div>
     <div class="font-mono opacity-65 text-gray-700 fixed bottom-2 right-8 pointer-events-none">
       v. a.0.1
+    </div>
+    <div
+      class="border p-1 rounded-md fixed right-2 top-2 text-2xl hover:cursor-pointer font-bold"
+      @click="saveEditor = !saveEditor"
+    >
+      =
+    </div>
+    <div
+      class="border fixed p-2 text-2xl flex flex-col gap-2"
+      style="
+        top: 40%;
+        left: 50%;
+        transform: translate(-50%, -50%); /* Moves the element back by half its own width/height */
+      "
+    >
+      This is save editor.
+      <button
+        class="border rounded-md w-fit p-1 text-xl bg-red-100 font-semibold hover:cursor-pointer"
+        @click="playerStore.resetSave()"
+      >
+        reset save
+      </button>
     </div>
   </div>
 </template>

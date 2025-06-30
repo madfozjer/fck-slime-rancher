@@ -80,14 +80,16 @@ export const useGachaStore = defineStore('gacha', {
               if (effectDrop > 93) {
                 effects.push('Foil')
                 this.InventoryStore.addHunter(drop.name, 'Foil')
+              } else {
+                // Add the hunter to the player's collection
+                drop['foil'] = false
+                effects.push('Standard')
+                this.InventoryStore.addHunter(drop.name)
               }
-            } else {
-              // Add the hunter to the player's collection
-              effects.push('Standard')
-              this.InventoryStore.addHunter(drop.name)
             }
 
             // Return the rolled hunter
+
             return [this.HunterStore.getHunterByName(drop.name), effects]
           } else if (drop.type == 'Weapon') {
             // Add the weapon to the player's collection

@@ -12,12 +12,26 @@ export const useInventoryStore = defineStore('inventory', {
     currentWeaponID: 2,
   }),
   actions: {
+    clearInventorySave() {
+      localStorage.setItem('hunters', JSON.stringify([]))
+      localStorage.setItem('weapons', JSON.stringify([]))
+      localStorage.setItem('activeHunters', JSON.stringify([]))
+    },
     initializeInventory() {
-      if (this.hunters.length <= 0 && this.weapons.length <= 0) {
+      // this.clearInventorySave()
+      if (
+        JSON.parse(localStorage.getItem('hunters')).length <= 0 &&
+        JSON.parse(localStorage.getItem('activeHunters')).length <= 0
+      ) {
         this.addHunter('Jacob')
         this.hunters[0].id = 1
         this.addWeapon('Wooden Sword')
         console.log('Initialized inventory')
+      } else {
+        this.currentHunterID = parseInt(localStorage.getItem('currentHunterID'))
+        this.currentWeaponID = parseInt(localStorage.getItem('currentWeaponID'))
+        this.hunters = JSON.parse(localStorage.getItem('hunters'))
+        this.weapons = JSON.parse(localStorage.getItem('weapons'))
       }
     },
 
@@ -36,6 +50,7 @@ export const useInventoryStore = defineStore('inventory', {
           }
 
           this.hunters.push(newHunter)
+          this.updateStorage()
         }
       } catch (error) {}
     },
@@ -46,13 +61,21 @@ export const useInventoryStore = defineStore('inventory', {
         const weapon = weaponStore.getWeaponByName(name)
 
         if (weapon) {
-          const newWeaapon = { ...weapon }
-          newWeaapon.id = 1 + this.currentWeaponID
+          const newWeapon = { ...weapon }
+          newWeapon.id = 1 + this.currentWeaponID
           this.currentWeaponID++
-          this.weapons.push(newWeaapon)
+          this.weapons.push(newWeapon)
+          this.updateStorage()
         } else {
         }
       } catch (error) {}
+    },
+
+    updateStorage() {
+      localStorage.setItem('hunters', JSON.stringify(this.hunters))
+      localStorage.setItem('weapons', JSON.stringify(this.weapons))
+      localStorage.setItem('currentHunterID', this.currentHunterID)
+      localStorage.setItem('currentWeaponID', this.currentWeaponID)
     },
   },
 })
