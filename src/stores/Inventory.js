@@ -46,6 +46,7 @@ export const useInventoryStore = defineStore('inventory', {
         }
       } catch (err) {
         console.error('Error while trying to load previous save:', err)
+        localStorage.clear()
         this.addHunter('Jacob')
         this.hunters[0].id = 1
         this.addWeapon('Wooden Sword')
