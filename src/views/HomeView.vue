@@ -301,6 +301,7 @@ let draggedHunterId = ref(null)
 
 const saveEditor = ref(false)
 const importSave = ref(false)
+const seenControls = ref(false)
 
 const selectedFile = { value: null }
 
@@ -593,7 +594,6 @@ const handleAnimationEnd = (type) => {
       =
     </div>
     <div
-      v-if="saveEditor"
       class="border fixed p-2 text-2xl flex flex-col gap-2"
       style="
         top: 40%;
@@ -601,46 +601,74 @@ const handleAnimationEnd = (type) => {
         transform: translate(-50%, -50%); /* Moves the element back by half its own width/height */
       "
     >
-      <button @click="saveEditor = false" class="ml-auto mr-2 hover:cursor-pointer">x</button>
-      This is save editor.
-      <button
-        class="border rounded-md w-fit p-1 text-xl bg-red-100 font-semibold hover:cursor-pointer"
-        @click="playerStore.resetSave()"
-      >
-        reset save
-      </button>
-      <button
-        class="border rounded-md w-fit p-1 text-xl bg-green-100 font-semibold hover:cursor-pointer"
-        @click="playerStore.downloadSave()"
-      >
-        download save
-      </button>
-      <button
-        class="border rounded-md w-fit p-1 text-xl bg-purple-100 font-semibold hover:cursor-pointer"
-        @click="importSave = !importSave"
-      >
-        import save
-      </button>
-      <div v-if="importSave" class="border border-purple-800 border-dashed p-2">
-        <label for="importFile" class="file-label">Select Data File:</label><br />
-        <!-- Use a method for @change, and bind selectedFile to the input if needed for display, though not strictly necessary for functionality -->
-        <input
-          class="border border-dotted p-1 file-input m-2 ml-0 font-thin"
-          type="file"
-          id="importFile"
-          @change="handleFileChange"
-          accept=".fck"
-        />
-
-        <!-- Pass the actual File object (selectedFile.value) to the store action -->
-        <!-- Disable the button if no file is selected -->
-        <br /><button
-          class="border p-1 rounded-md bg-green-100 font-semibold"
-          @click="loadSave"
-          :disabled="!selectedFile"
+      <div v-if="!seenControls" class="ml-4 mr-4 text-[18px] bg-white">
+        <button
+          class="fixed right-4 hover:cursor-pointer text-md text-red-800 font-semibold"
+          @click="seenControls = !seenControls"
         >
-          Load Save
+          x</button
+        ><br />
+        <span>
+          привет маленькие любители экстремизма! <br />
+          игра все еще в ранней альфе, поэтому множество вещей еще не готово или банально поломано
+          <br />
+          на телефонах вообще поломано, поэтому даже не пробуйте заходить. но вот вам главные
+          элементы управления, которые вы должны знать: <br />
+          <span class="font-semibold">- вкинуть котика в слот</span> просто тянит его и дропайте там
+          <br />
+          <span class="font-semibold">- дать ему в лапки пушку</span> кликнете в инвенторе оружие,
+          потом кликните на котика <br />
+          <span class="font-semibold">- снять котика со слота</span> даблклик на нем <br />
+          <span class="font-semibold">- снять пушку с котика</span> правой кнопки мыши кликнуть на
+          него <br /><br />
+          по секрету скажу что после убийства босса вас ждет сюрприз, а еще здесь есть тайные
+          симпатишные <span class="font-semibold text-purple-800 shadow-md">foil</span> охотники и
+          есть один легендарный дроп с шансом 1%. have fun! <br />
+          по всем вопросам, предложениям крч че угодно пишите диме фозериону.
+        </span>
+      </div>
+      <div v-if="saveEditor">
+        <button @click="saveEditor = false" class="ml-auto mr-2 hover:cursor-pointer">x</button>
+        This is save editor.
+        <button
+          class="border rounded-md w-fit p-1 text-xl bg-red-100 font-semibold hover:cursor-pointer"
+          @click="playerStore.resetSave()"
+        >
+          reset save
         </button>
+        <button
+          class="border rounded-md w-fit p-1 text-xl bg-green-100 font-semibold hover:cursor-pointer"
+          @click="playerStore.downloadSave()"
+        >
+          download save
+        </button>
+        <button
+          class="border rounded-md w-fit p-1 text-xl bg-purple-100 font-semibold hover:cursor-pointer"
+          @click="importSave = !importSave"
+        >
+          import save
+        </button>
+        <div v-if="importSave" class="border border-purple-800 border-dashed p-2">
+          <label for="importFile" class="file-label">Select Data File:</label><br />
+          <!-- Use a method for @change, and bind selectedFile to the input if needed for display, though not strictly necessary for functionality -->
+          <input
+            class="border border-dotted p-1 file-input m-2 ml-0 font-thin"
+            type="file"
+            id="importFile"
+            @change="handleFileChange"
+            accept=".fck"
+          />
+
+          <!-- Pass the actual File object (selectedFile.value) to the store action -->
+          <!-- Disable the button if no file is selected -->
+          <br /><button
+            class="border p-1 rounded-md bg-green-100 font-semibold"
+            @click="loadSave"
+            :disabled="!selectedFile"
+          >
+            Load Save
+          </button>
+        </div>
       </div>
     </div>
   </div>
