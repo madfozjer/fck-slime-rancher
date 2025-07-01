@@ -106,7 +106,7 @@ watch(
       :src="
         isExist
           ? isAttacking
-            ? `/hunters/${props.name}/${props.name}-attack.png`
+            ? `/fck-slime-rancher/hunters/${props.name}/${props.name}-attack.png`
             : props.img || `/hunters/${props.name}/${props.name}.png`
           : ''
       "
