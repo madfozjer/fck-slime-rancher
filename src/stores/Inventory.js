@@ -21,7 +21,6 @@ export const useInventoryStore = defineStore('inventory', {
       console.log(localStorage.getItem('hunters'))
       if (!localStorage.getItem('hunters') || !localStorage.getItem('activeHunters')) {
         this.clearInventorySave()
-        return null
       }
 
       if (
