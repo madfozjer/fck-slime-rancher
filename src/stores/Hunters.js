@@ -1,3 +1,5 @@
+// stores/hunters.js (or wherever your store is located)
+
 import { defineStore } from 'pinia'
 
 export const useHuntersStore = defineStore('hunters', {
@@ -9,7 +11,8 @@ export const useHuntersStore = defineStore('hunters', {
         emoji: '🐱🤓',
         color: 'orange',
         speed: 3,
-        img: './fck-slime-rancher/hunters/Jacob/Jacob.png',
+        // Corrected path: starts with the base URL and then the path relative to 'public'
+        img: '/fck-slime-rancher/hunters/Jacob/Jacob.png',
         weapon: null,
         rarity: 'Normal',
         modifier: {
@@ -23,7 +26,8 @@ export const useHuntersStore = defineStore('hunters', {
         emoji: '🐱🦇',
         color: 'gray',
         speed: 2,
-        img: './fck-slime-rancher/hunters/Dandy/Dandy.png',
+        // Corrected path
+        img: '/fck-slime-rancher/hunters/Dandy/Dandy.png',
         weapon: null,
         rarity: 'Normal',
         modifier: {
@@ -37,7 +41,8 @@ export const useHuntersStore = defineStore('hunters', {
         emoji: '🖤🌙',
         color: 'black',
         speed: 1,
-        img: './fck-slime-rancher//hunters/Cheese/Cheese.png', //
+        // Corrected path
+        img: '/fck-slime-rancher/hunters/Cheese/Cheese.png',
         weapon: null,
         rarity: 'Extra',
         modifier: {
@@ -51,7 +56,8 @@ export const useHuntersStore = defineStore('hunters', {
         emoji: '👑🦇💨',
         color: 'darkmagenta',
         speed: 100,
-        img: './fck-slime-rancher/hunters/Swidlerton/Swidlerton.png',
+        // Corrected path
+        img: '/fck-slime-rancher/hunters/Swidlerton/Swidlerton.png',
         weapon: null,
         rarity: 'Extraordinary',
         modifier: {
