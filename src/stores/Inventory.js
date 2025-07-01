@@ -21,7 +21,9 @@ export const useInventoryStore = defineStore('inventory', {
       // this.clearInventorySave()
       if (
         JSON.parse(localStorage.getItem('hunters')).length <= 0 &&
-        JSON.parse(localStorage.getItem('activeHunters')).length <= 0
+        JSON.parse(localStorage.getItem('activeHunters')).length <= 0 &&
+        localStorage.getItem('hunters') != null &&
+        localStorage.getItem('activeHunters') != null
       ) {
         this.addHunter('Jacob')
         this.hunters[0].id = 1
