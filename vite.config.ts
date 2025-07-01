@@ -8,6 +8,7 @@ import path from 'path'
 
 export default defineConfig({
   plugins: [vue(), vueDevtools(), tailwindcss()],
+  base: '/fck-slime-rancher/',
   resolve: {
     // Optional: Configure path aliases for easier imports (e.g., @/components)
     alias: {
