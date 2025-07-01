@@ -29,7 +29,7 @@ export const useInventoryStore = defineStore('inventory', {
       this.addHunter('Jacob')
       this.hunters[0].id = 1
       this.addWeapon('Wooden Sword')
-      console.log('Initialized inventory')
+      console.log('Initialized inventory') //
     },
 
     async addHunter(name, effect) {
