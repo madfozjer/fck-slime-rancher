@@ -300,6 +300,36 @@ let draggedWeaponId = ref(null)
 let draggedHunterId = ref(null)
 
 const saveEditor = ref(false)
+const importSave = ref(false)
+
+const selectedFile = { value: null }
+
+//* TODO: READ THIS ALL SHIT *//
+
+// This method will be called when the file input's value changes
+const handleFileChange = (event) => {
+  selectedFile.value = event.target.files[0]
+}
+
+const loadSave = async () => {
+  if (selectedFile.value) {
+    // Assuming playerStore refers to playerStorein your context
+    // If playerStoreis directly used, replace 'playerStore.importSave' with 'SaveManager.importSave'.
+    const success = await playerStore.importSave(selectedFile.value)
+    if (success) {
+      // Example: Update UI or show success message
+      // importStatus.value = 'Import initiated. Check console/store state for details.';
+      alert('Save loaded successfully!')
+    } else {
+      // Example: Update UI or show error message
+      // importStatus.value = 'Import failed. Check console for details.';
+      alert('Failed to load save.')
+    }
+  } else {
+    alert('No file selected for import.')
+    // importStatus.value = 'Please select a file first.';
+  }
+}
 
 function onDragWeapon(weaponId) {
   draggedWeaponId.value = weaponId
@@ -563,6 +593,7 @@ const handleAnimationEnd = (type) => {
       =
     </div>
     <div
+      v-if="saveEditor"
       class="border fixed p-2 text-2xl flex flex-col gap-2"
       style="
         top: 40%;
@@ -570,6 +601,7 @@ const handleAnimationEnd = (type) => {
         transform: translate(-50%, -50%); /* Moves the element back by half its own width/height */
       "
     >
+      <button @click="saveEditor = false" class="ml-auto mr-2 hover:cursor-pointer">x</button>
       This is save editor.
       <button
         class="border rounded-md w-fit p-1 text-xl bg-red-100 font-semibold hover:cursor-pointer"
@@ -577,6 +609,39 @@ const handleAnimationEnd = (type) => {
       >
         reset save
       </button>
+      <button
+        class="border rounded-md w-fit p-1 text-xl bg-green-100 font-semibold hover:cursor-pointer"
+        @click="playerStore.downloadSave()"
+      >
+        download save
+      </button>
+      <button
+        class="border rounded-md w-fit p-1 text-xl bg-purple-100 font-semibold hover:cursor-pointer"
+        @click="importSave = !importSave"
+      >
+        import save
+      </button>
+      <div v-if="importSave" class="border border-purple-800 border-dashed p-2">
+        <label for="importFile" class="file-label">Select Data File:</label><br />
+        <!-- Use a method for @change, and bind selectedFile to the input if needed for display, though not strictly necessary for functionality -->
+        <input
+          class="border border-dotted p-1 file-input m-2 ml-0 font-thin"
+          type="file"
+          id="importFile"
+          @change="handleFileChange"
+          accept=".fck"
+        />
+
+        <!-- Pass the actual File object (selectedFile.value) to the store action -->
+        <!-- Disable the button if no file is selected -->
+        <br /><button
+          class="border p-1 rounded-md bg-green-100 font-semibold"
+          @click="loadSave"
+          :disabled="!selectedFile"
+        >
+          Load Save
+        </button>
+      </div>
     </div>
   </div>
 </template>
