@@ -19,11 +19,18 @@ export const useInventoryStore = defineStore('inventory', {
     },
     initializeInventory() {
       console.log(localStorage.getItem('hunters'))
-      if (!localStorage.getItem('hunters') || !localStorage.getItem('activeHunters'))
+      if (!localStorage.getItem('hunters') || !localStorage.getItem('activeHunters')) {
         this.clearInventorySave()
+        return null
+      }
 
-      if (localStorage.getItem('hunters') == [] && localStorage.getItem('activeHunters') == [])
+      if (
+        localStorage.getItem('hunters').length <= 0 &&
+        localStorage.getItem('activeHunters') <= 0
+      ) {
         this.fillInventory()
+        return null
+      }
     },
 
     fillInventory() {
