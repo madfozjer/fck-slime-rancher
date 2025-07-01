@@ -13,7 +13,7 @@ export const useMobsStore = defineStore('mobs', () => {
       bits: 1,
       description: 'a weak, bouncy blob of goon. ',
       borderColor: '#22c55e',
-      damagedImg: 'mobs/green-slime/green-slime-damaged.png',
+      damagedImg: './mobs/green-slime/green-slime-damaged.png',
       boss: false,
     },
     {
@@ -26,7 +26,7 @@ export const useMobsStore = defineStore('mobs', () => {
       bits: 1,
       description: 'hello :3 pwease dont hurtf me ',
       borderColor: '#c9f2fc ',
-      damagedImg: `mobs/cutie-pie/cutie-pie-damaged.png`,
+      damagedImg: `./mobs/cutie-pie/cutie-pie-damaged.png`,
       boss: false,
     },
   ])
@@ -42,7 +42,7 @@ export const useMobsStore = defineStore('mobs', () => {
       bits: 0,
       description: 'ima big boy now',
       borderColor: '#c9f2fc ',
-      damagedImg: `mobs/cutie-pie/cutie-pie-damaged.png`,
+      damagedImg: `./mobs/cutie-pie/cutie-pie-damaged.png`,
       boss: true,
       bossTime: 10,
     },
