@@ -37,7 +37,7 @@ export const useHuntersStore = defineStore('hunters', {
         emoji: '🖤🌙',
         color: 'black',
         speed: 1,
-        img: './hunters/Cheese/Cheese.png',
+        img: './hunters/Cheese/Cheese.png', //
         weapon: null,
         rarity: 'Extra',
         modifier: {
