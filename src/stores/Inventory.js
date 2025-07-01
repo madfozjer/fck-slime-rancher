@@ -18,26 +18,34 @@ export const useInventoryStore = defineStore('inventory', {
       localStorage.setItem('activeHunters', JSON.stringify([]))
     },
     initializeInventory() {
-      // this.clearInventorySave()
-      if (
-        localStorage.getItem('hunters') != null &&
-        localStorage.getItem('activeHunters') != null
-      ) {
+      try {
+        // this.clearInventorySave()
         if (
-          JSON.parse(localStorage.getItem('hunters')).length <= 0 &&
-          JSON.parse(localStorage.getItem('activeHunters')).length <= 0
+          localStorage.getItem('hunters') != null &&
+          localStorage.getItem('activeHunters') != null
         ) {
+          if (
+            JSON.parse(localStorage.getItem('hunters')).length <= 0 &&
+            JSON.parse(localStorage.getItem('activeHunters')).length <= 0
+          ) {
+            this.addHunter('Jacob')
+            this.hunters[0].id = 1
+            this.addWeapon('Wooden Sword')
+            console.log('Initialized inventory')
+          } else {
+            this.currentHunterID = parseInt(localStorage.getItem('currentHunterID'))
+            this.currentWeaponID = parseInt(localStorage.getItem('currentWeaponID'))
+            this.hunters = JSON.parse(localStorage.getItem('hunters'))
+            this.weapons = JSON.parse(localStorage.getItem('weapons'))
+          }
+        } else {
           this.addHunter('Jacob')
           this.hunters[0].id = 1
           this.addWeapon('Wooden Sword')
           console.log('Initialized inventory')
-        } else {
-          this.currentHunterID = parseInt(localStorage.getItem('currentHunterID'))
-          this.currentWeaponID = parseInt(localStorage.getItem('currentWeaponID'))
-          this.hunters = JSON.parse(localStorage.getItem('hunters'))
-          this.weapons = JSON.parse(localStorage.getItem('weapons'))
         }
-      } else {
+      } catch (err) {
+        console.error('Error while trying to load previous save:', err)
         this.addHunter('Jacob')
         this.hunters[0].id = 1
         this.addWeapon('Wooden Sword')
