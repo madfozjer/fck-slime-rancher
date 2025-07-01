@@ -9,7 +9,7 @@ export const useHuntersStore = defineStore('hunters', {
         emoji: '🐱🤓',
         color: 'orange',
         speed: 3,
-        img: '/hunters/Jacob/Jacob.png',
+        img: './public/hunters/Jacob/Jacob.png',
         weapon: null,
         rarity: 'Normal',
         modifier: {
@@ -23,7 +23,7 @@ export const useHuntersStore = defineStore('hunters', {
         emoji: '🐱🦇',
         color: 'gray',
         speed: 2,
-        img: '/hunters/Dandy/Dandy.png',
+        img: './public/hunters/Dandy/Dandy.png',
         weapon: null,
         rarity: 'Normal',
         modifier: {
@@ -37,7 +37,7 @@ export const useHuntersStore = defineStore('hunters', {
         emoji: '🖤🌙',
         color: 'black',
         speed: 1,
-        img: '/hunters/Cheese/Cheese.png',
+        img: './public/hunters/Cheese/Cheese.png',
         weapon: null,
         rarity: 'Extra',
         modifier: {
@@ -51,7 +51,7 @@ export const useHuntersStore = defineStore('hunters', {
         emoji: '👑🦇💨',
         color: 'darkmagenta',
         speed: 100,
-        img: '/hunters/Swidlerton/Swidlerton.png',
+        img: './public/hunters/Swidlerton/Swidlerton.png',
         weapon: null,
         rarity: 'Extraordinary',
         modifier: {

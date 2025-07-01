@@ -5,7 +5,7 @@ export const useMobsStore = defineStore('mobs', () => {
   const mobs = ref([
     {
       name: 'Green Slime',
-      img: 'mobs/green-slime/green-slime.png',
+      img: './public/mobs/green-slime/green-slime.png',
       alt: 'Green Slime',
       hp: 23,
       maxHp: 23,
@@ -18,7 +18,7 @@ export const useMobsStore = defineStore('mobs', () => {
     },
     {
       name: 'Cutie Pie',
-      img: `mobs/cutie-pie/cutie-pie.png`,
+      img: `./public/mobs/cutie-pie/cutie-pie.png`,
       alt: 'Cutie Pie',
       hp: 30,
       maxHp: 30,
@@ -34,7 +34,7 @@ export const useMobsStore = defineStore('mobs', () => {
   const bosses = ref([
     {
       name: 'Cutie Pie Boss',
-      img: `mobs/cutie-pie/cutie-pie.png`,
+      img: `./public/mobs/cutie-pie/cutie-pie.png`,
       alt: 'Cutie Pie',
       hp: 175,
       maxHp: 175,
