@@ -600,6 +600,7 @@ const handleAnimationEnd = (type) => {
         left: 50%;
         transform: translate(-50%, -50%); /* Moves the element back by half its own width/height */
       "
+      v-if="!seenControls"
     >
       <div v-if="!seenControls" class="ml-4 mr-4 text-[18px] bg-white">
         <button
